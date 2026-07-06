@@ -56,35 +56,103 @@ export function genTorus(n, seed = 11) {
   return { pos, col }
 }
 
-// Scene 1 — twin flowing curtains / veils of particles
-export function genCurtain(n, seed = 22) {
+// Scene 1 — two serpentine strands flanking the hero text (the ring splits
+// into these). Left strand runs cool (lavender), right runs warm (pink).
+export function genStrands(n, seed = 22) {
   const rand = mulberry32(seed)
   const gauss = makeGauss(rand)
   const pos = new Float32Array(n * 3)
   const col = new Float32Array(n)
   for (let i = 0; i < n; i++) {
-    const side = rand() < 0.5 ? -1 : 1
-    const y = (rand() * 2 - 1) * 11
-    // veils get narrower toward the bottom and sway like fabric
-    const taper = 0.5 + 0.5 * ((y + 11) / 22)
-    let x = side * (4.6 + gauss() * 1.7 * taper)
-    let z = gauss() * 1.2
-    x += Math.sin(y * 0.32 + side * 1.7) * 1.9
-    z += Math.cos(y * 0.27 + side) * 1.4
-    if (rand() < 0.1) {
-      // loose scatter drifting between the veils
-      x = (rand() * 2 - 1) * 14
-      z = (rand() * 2 - 1) * 4
+    const side = i % 2 === 0 ? -1 : 1
+    if (rand() < 0.06) {
+      // loose scatter drifting between the strands
+      pos[i * 3] = (rand() * 2 - 1) * 13
+      pos[i * 3 + 1] = (rand() * 2 - 1) * 11
+      pos[i * 3 + 2] = (rand() * 2 - 1) * 3.5
+      col[i] = 0.4 + rand() * 0.25
+      continue
     }
+    const t = rand()
+    const y = (t * 2 - 1) * 11.3
+    // snaking centre line with two bend octaves
+    const cx =
+      side *
+      (5.4 + Math.sin(y * 0.27 + side * 1.8) * 2.3 + Math.sin(y * 0.12 - side * 0.6) * 1.2)
+    // ribbon cross-section, tapered toward both ends
+    const env = 0.35 + 0.65 * Math.pow(Math.sin(Math.PI * t), 0.5)
+    const w = gauss() * 0.85 * env
+    const x = cx + w
+    const z =
+      gauss() * 0.5 * env +
+      Math.cos(y * 0.85 + side) * 0.9 +
+      Math.sin(y * 1.6 + w * 3.5 + side * 2.0) * 0.3
     pos[i * 3] = x
     pos[i * 3 + 1] = y
     pos[i * 3 + 2] = z
-    col[i] = Math.min(Math.max(0.5 + x / 26 + gauss() * 0.07, 0), 1)
+    const base = side < 0 ? 0.16 : 0.86
+    col[i] = Math.min(
+      Math.max(base + gauss() * 0.1 + Math.sin(y * 0.4) * 0.06, 0),
+      1,
+    )
+    if (rand() < 0.015) col[i] = 1.1
   }
   return { pos, col }
 }
 
-// Scene 2 — vertical DNA double helix
+// Scene 2 — the merge: a funnel/vortex the strands get sucked into.
+// Structured rows×cols grid so it reads as a fine mesh, not noise.
+export function genFunnel(n, seed = 25) {
+  const rand = mulberry32(seed)
+  const gauss = makeGauss(rand)
+  const pos = new Float32Array(n * 3)
+  const col = new Float32Array(n)
+  const COLS = 220
+  const rows = Math.ceil(n / COLS)
+  for (let i = 0; i < n; i++) {
+    const row = Math.floor(i / COLS)
+    const s = row / (rows - 1) // 0 waist (bottom) → 1 rim (top)
+    // swirl shear so the grid columns read as vortex lines
+    const th = ((i % COLS) / COLS) * TAU + s * 1.35
+    const r = 0.65 + 8.9 * Math.pow(s, 1.65)
+    pos[i * 3] = Math.cos(th) * r * 1.06 + gauss() * 0.05
+    pos[i * 3 + 1] = -5.3 + s * 10.8 + gauss() * 0.04
+    pos[i * 3 + 2] = Math.sin(th) * r * 0.62 + gauss() * 0.05
+    col[i] = Math.min(Math.max(0.22 + s * 0.45 + gauss() * 0.05, 0), 1)
+    // white-hot waist where everything converges
+    if (s < 0.1 && rand() < 0.5) col[i] = 1.02 + rand() * 0.25
+  }
+  return { pos, col }
+}
+
+// Scene 3 — full-width rippling mesh curtain (fine horizontal particle rows)
+export function genMesh(n, seed = 27) {
+  const rand = mulberry32(seed)
+  const gauss = makeGauss(rand)
+  const pos = new Float32Array(n * 3)
+  const col = new Float32Array(n)
+  const ROWS = 70
+  const cols = Math.ceil(n / ROWS)
+  for (let i = 0; i < n; i++) {
+    const row = i % ROWS
+    const colIdx = Math.floor(i / ROWS)
+    const u = colIdx / (cols - 1)
+    const v = row / (ROWS - 1)
+    let x = (u * 2 - 1) * 9.6 + gauss() * 0.03
+    let y = (v * 2 - 1) * 5.3 + gauss() * 0.03
+    const z =
+      Math.sin(x * 0.44 + y * 0.6) * 0.9 + Math.sin(x * 0.21 - y * 0.33 + 1.7) * 0.7
+    y += Math.sin(x * 0.35 + 0.6) * 0.55 // gentle drape across the sheet
+    pos[i * 3] = x
+    pos[i * 3 + 1] = y
+    pos[i * 3 + 2] = z
+    col[i] = Math.min(Math.max(0.2 + u * 0.5 + gauss() * 0.04, 0), 1)
+    if (rand() < 0.006) col[i] = 1.05
+  }
+  return { pos, col }
+}
+
+// Scene 4 — vertical DNA double helix
 export function genHelix(n, seed = 33) {
   const rand = mulberry32(seed)
   const gauss = makeGauss(rand)
@@ -105,7 +173,7 @@ export function genHelix(n, seed = 33) {
       x = Math.cos(a) * RAD * (s * 2 - 1)
       z = Math.sin(a) * RAD * (s * 2 - 1)
     } else {
-      const fuzz = rand() < 0.3 ? 1.5 : 0.5
+      const fuzz = rand() < 0.3 ? 1.7 : 0.55
       x = Math.cos(phase) * RAD + gauss() * fuzz
       z = Math.sin(phase) * RAD + gauss() * fuzz
     }
@@ -114,12 +182,15 @@ export function genHelix(n, seed = 33) {
     pos[i * 3 + 2] = z
     // bottom lavender → top pink, hot knots along the spine
     col[i] = Math.min(Math.max(0.12 + ((y + 12.5) / 25) * 0.85 + gauss() * 0.06, 0), 1)
-    if (rand() < 0.02) col[i] = 1.2
+    // white-hot where the two strands cross on screen (|cos(phase)| ≈ 0)
+    if (Math.abs(Math.cos(phase)) < 0.22 && rand() < 0.5)
+      col[i] = 1.12 + rand() * 0.2
+    else if (rand() < 0.02) col[i] = 1.2
   }
   return { pos, col }
 }
 
-// Scene 3 — undulating particle terrain across the lower half
+// Scene 5 — undulating particle terrain across the lower half
 export function genTerrain(n, seed = 44) {
   const rand = mulberry32(seed)
   const gauss = makeGauss(rand)
@@ -145,7 +216,7 @@ export function genTerrain(n, seed = 44) {
   return { pos, col }
 }
 
-// Scene 4 — black hole: dense swirl of stars with a hollow core
+// Scene 6 — black hole: dense swirl of stars with a hollow core
 export function genBlackHole(n, seed = 55) {
   const rand = mulberry32(seed)
   const gauss = makeGauss(rand)
@@ -171,7 +242,7 @@ export function genBlackHole(n, seed = 55) {
   return { pos, col }
 }
 
-// Scene 5 — spiral galaxy with a blazing core (baked flat; tilted in shader)
+// Scene 7 — spiral galaxy with a blazing core (baked flat; tilted in shader)
 export function genGalaxy(n, seed = 66) {
   const rand = mulberry32(seed)
   const gauss = makeGauss(rand)

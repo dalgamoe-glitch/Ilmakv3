@@ -1,16 +1,17 @@
 import { motion, useTransform } from 'framer-motion'
+import { ECO } from '../scrollMap.js'
 
-// Scene 5 — galaxy scene: headline above, copy + CTAs below the core.
+// Scene 7 — galaxy scene: headline above, copy + CTAs below the core.
 export default function Ecosystem({ progress }) {
   // keyframes span 0..1 — see the ScrollTimeline note in Hero.jsx
   const opacity = useTransform(
     progress,
-    [0, 0.86, 0.92, 1],
+    [0, ECO.start, ECO.inEnd, 1],
     [0, 0, 1, 1],
   )
   const pointerEvents = useTransform(opacity, (o) => (o > 0.25 ? 'auto' : 'none'))
-  const yTop = useTransform(progress, [0, 0.86, 1], [90, 90, 0])
-  const yBottom = useTransform(progress, [0, 0.88, 1], [70, 70, 0])
+  const yTop = useTransform(progress, [0, ECO.start, 1], [90, 90, 0])
+  const yBottom = useTransform(progress, [0, ECO.start + 0.02, 1], [70, 70, 0])
 
   return (
     <motion.section

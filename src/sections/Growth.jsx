@@ -1,16 +1,25 @@
 import { motion, useTransform } from 'framer-motion'
+import { GROWTH } from '../scrollMap.js'
 
-// Scene 3 — headline left, supporting copy + CTAs right, above the terrain.
+// Scene 5 — headline left, supporting copy + CTAs right, above the terrain.
 export default function Growth({ progress }) {
   // keyframes span 0..1 — see the ScrollTimeline note in Hero.jsx
   const opacity = useTransform(
     progress,
-    [0, 0.48, 0.54, 0.62, 0.69, 1],
+    [0, GROWTH.start, GROWTH.inEnd, GROWTH.outStart, GROWTH.end, 1],
     [0, 0, 1, 1, 0, 0],
   )
   const pointerEvents = useTransform(opacity, (o) => (o > 0.25 ? 'auto' : 'none'))
-  const yLeft = useTransform(progress, [0, 0.48, 0.69, 1], [110, 110, -130, -130])
-  const yRight = useTransform(progress, [0, 0.48, 0.69, 1], [70, 70, -170, -170])
+  const yLeft = useTransform(
+    progress,
+    [0, GROWTH.start, GROWTH.end, 1],
+    [110, 110, -130, -130],
+  )
+  const yRight = useTransform(
+    progress,
+    [0, GROWTH.start, GROWTH.end, 1],
+    [70, 70, -170, -170],
+  )
 
   return (
     <motion.section

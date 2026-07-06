@@ -2,7 +2,9 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import {
   genTorus,
-  genCurtain,
+  genStrands,
+  genFunnel,
+  genMesh,
   genHelix,
   genTerrain,
   genBlackHole,
@@ -16,33 +18,7 @@ import {
   holeFragment,
 } from './shaders.js'
 import { createStarfield } from './starfield.js'
-
-// Scroll progress (0..1) → scene float (0..5) with holds on each formation.
-const KEYS = [
-  [0.0, 0],
-  [0.1, 0],
-  [0.17, 1],
-  [0.21, 1],
-  [0.3, 2],
-  [0.42, 2],
-  [0.52, 3],
-  [0.64, 3],
-  [0.74, 4],
-  [0.8, 4],
-  [0.9, 5],
-  [1.0, 5],
-]
-
-export function progressToScene(p) {
-  for (let i = 1; i < KEYS.length; i++) {
-    if (p <= KEYS[i][0]) {
-      const [p0, s0] = KEYS[i - 1]
-      const [p1, s1] = KEYS[i]
-      return s0 + ((p - p0) / (p1 - p0)) * (s1 - s0)
-    }
-  }
-  return 5
-}
+import { progressToScene } from '../scrollMap.js'
 
 export default function ParticleScene({ progress }) {
   const mountRef = useRef(null)
@@ -77,9 +53,11 @@ export default function ParticleScene({ progress }) {
       window.innerWidth < 768 || (navigator.hardwareConcurrency || 8) <= 4
     const N = isSmall ? 26000 : 55000
 
-    // bake all six formations as vertex attributes
+    // bake all eight formations as vertex attributes
     const torus = genTorus(N)
-    const curtain = genCurtain(N)
+    const strands = genStrands(N)
+    const funnel = genFunnel(N)
+    const mesh = genMesh(N)
     const helix = genHelix(N)
     const terrain = genTerrain(N)
     const hole = genBlackHole(N)
@@ -88,24 +66,30 @@ export default function ParticleScene({ progress }) {
 
     const colA = new Float32Array(N * 3)
     const colB = new Float32Array(N * 3)
+    const colC = new Float32Array(N * 2)
     for (let i = 0; i < N; i++) {
       colA[i * 3] = torus.col[i]
-      colA[i * 3 + 1] = curtain.col[i]
-      colA[i * 3 + 2] = helix.col[i]
-      colB[i * 3] = terrain.col[i]
-      colB[i * 3 + 1] = hole.col[i]
-      colB[i * 3 + 2] = galaxy.col[i]
+      colA[i * 3 + 1] = strands.col[i]
+      colA[i * 3 + 2] = funnel.col[i]
+      colB[i * 3] = mesh.col[i]
+      colB[i * 3 + 1] = helix.col[i]
+      colB[i * 3 + 2] = terrain.col[i]
+      colC[i * 2] = hole.col[i]
+      colC[i * 2 + 1] = galaxy.col[i]
     }
 
     const geo = new THREE.BufferGeometry()
     geo.setAttribute('position', new THREE.BufferAttribute(torus.pos, 3))
-    geo.setAttribute('aPos1', new THREE.BufferAttribute(curtain.pos, 3))
-    geo.setAttribute('aPos2', new THREE.BufferAttribute(helix.pos, 3))
-    geo.setAttribute('aPos3', new THREE.BufferAttribute(terrain.pos, 3))
-    geo.setAttribute('aPos4', new THREE.BufferAttribute(hole.pos, 3))
-    geo.setAttribute('aPos5', new THREE.BufferAttribute(galaxy.pos, 3))
+    geo.setAttribute('aPos1', new THREE.BufferAttribute(strands.pos, 3))
+    geo.setAttribute('aPos2', new THREE.BufferAttribute(funnel.pos, 3))
+    geo.setAttribute('aPos3', new THREE.BufferAttribute(mesh.pos, 3))
+    geo.setAttribute('aPos4', new THREE.BufferAttribute(helix.pos, 3))
+    geo.setAttribute('aPos5', new THREE.BufferAttribute(terrain.pos, 3))
+    geo.setAttribute('aPos6', new THREE.BufferAttribute(hole.pos, 3))
+    geo.setAttribute('aPos7', new THREE.BufferAttribute(galaxy.pos, 3))
     geo.setAttribute('aColA', new THREE.BufferAttribute(colA, 3))
     geo.setAttribute('aColB', new THREE.BufferAttribute(colB, 3))
+    geo.setAttribute('aColC', new THREE.BufferAttribute(colC, 2))
     geo.setAttribute('aRand', new THREE.BufferAttribute(aRand, 1))
     geo.setAttribute('aSize', new THREE.BufferAttribute(aSize, 1))
     geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 60)
@@ -175,9 +159,9 @@ export default function ParticleScene({ progress }) {
       mat.uniforms.uScene.value = sceneF
       stars.material.uniforms.uTime.value = t
 
-      // occluder appears only around scene 4
+      // occluder appears only around the black-hole scene (6)
       holeMat.uniforms.uOpacity.value = THREE.MathUtils.clamp(
-        1 - Math.abs(sceneF - 4) * 2.2,
+        1 - Math.abs(sceneF - 6) * 2.2,
         0,
         1,
       )

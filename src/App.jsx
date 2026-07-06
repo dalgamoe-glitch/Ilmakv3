@@ -13,7 +13,7 @@ export default function App() {
 
   return (
     <div id="top">
-      {/* 700vh scroll track drives the whole voyage */}
+      {/* 850vh scroll track drives the whole voyage */}
       <div className="scroll-track" aria-hidden="true" />
 
       <div className="nebula" aria-hidden="true" />

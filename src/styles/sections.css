@@ -1,7 +1,7 @@
 /* ---------- page scaffold ---------- */
 
 .scroll-track {
-  height: 700vh;
+  height: 850vh; /* keep in sync with TRACK_VH in src/scrollMap.js */
 }
 
 .webgl-mount {
@@ -169,9 +169,35 @@
 .stats {
   align-items: center;
   justify-content: center;
-  perspective: 1200px;
+  perspective: 1100px;
+  overflow: hidden;
   --card-w: min(330px, 78vw);
 }
+
+/* card riding the 3D orbit around the helix (transform set from JS) */
+.orbit-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
+  pointer-events: auto !important;
+}
+
+/* scroll-velocity ghost copies of the card content (motion echo) */
+.card-echo {
+  position: absolute;
+  inset: 0;
+  padding: 26px 28px 30px;
+  pointer-events: none;
+  user-select: none;
+  filter: blur(2.5px);
+}
+.card-echo-far {
+  filter: blur(5px);
+}
+
+/* static pinned layout — reduced-motion fallback */
 .stat-pos {
   position: absolute;
   pointer-events: auto !important;
@@ -186,6 +212,7 @@
   top: 48%;
 }
 .stat-card {
+  position: relative;
   width: var(--card-w);
   padding: 26px 28px 30px;
 }
@@ -342,7 +369,7 @@
 
 @media (max-width: 1080px) {
   .stats {
-    --card-w: min(420px, 86vw);
+    --card-w: min(380px, 62vw);
   }
   .stat-left {
     left: 50%;
@@ -431,7 +458,7 @@
     gap: 22px;
   }
   .stats {
-    --card-w: min(340px, 90vw);
+    --card-w: min(300px, 82vw);
   }
   .stat-left {
     top: 13%;
