@@ -21,11 +21,11 @@ export const SCENE_KEYS = [
   [0.31, 3],
   [0.34, 3],
   [0.42, 4],
-  [0.55, 4],
-  [0.62, 5],
-  [0.7, 5],
-  [0.78, 6],
-  [0.83, 6],
+  [0.6, 4],
+  [0.66, 5],
+  [0.73, 5],
+  [0.79, 6],
+  [0.84, 6],
   [0.91, 7],
   [1.0, 7],
 ]
@@ -43,12 +43,12 @@ export function progressToScene(p) {
 
 // Overlay visibility windows in progress space.
 export const HERO = { holdEnd: 0.02, fadeStart: 0.07, fadeEnd: 0.12 }
-export const STATS = { start: 0.3, inEnd: 0.335, outStart: 0.52, end: 0.575 }
+export const STATS = { start: 0.3, inEnd: 0.335, outStart: 0.575, end: 0.625 }
 export const GROWTH = {
-  start: 0.58,
-  inEnd: 0.63,
-  outStart: 0.71,
-  end: 0.77,
+  start: 0.63,
+  inEnd: 0.675,
+  outStart: 0.74,
+  end: 0.79,
 }
 export const ECO = { start: 0.9, inEnd: 0.95 }
 export const FOOTER = { start: 0.972, inEnd: 0.996 }
@@ -56,7 +56,7 @@ export const FOOTER = { start: 0.972, inEnd: 0.996 }
 export const NAV_LABELS = [
   [0.0, 'ORIGIN'],
   [0.3, 'STRUCTURE'],
-  [0.58, 'FLOW'],
-  [0.75, 'VOYAGE'],
+  [0.63, 'FLOW'],
+  [0.76, 'VOYAGE'],
   [0.88, 'COSMOS'],
 ]

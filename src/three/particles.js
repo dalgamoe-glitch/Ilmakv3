@@ -116,7 +116,9 @@ export function genFunnel(n, seed = 25) {
     const th = ((i % COLS) / COLS) * TAU + s * 1.35
     const r = 0.65 + 8.9 * Math.pow(s, 1.65)
     pos[i * 3] = Math.cos(th) * r * 1.06 + gauss() * 0.05
-    pos[i * 3 + 1] = -5.3 + s * 10.8 + gauss() * 0.04
+    // camera sees ~±10.4 world units vertically — the waist pours just past
+    // the bottom edge of the screen, rim near the top
+    pos[i * 3 + 1] = -10.8 + s * 20.2 + gauss() * 0.04
     pos[i * 3 + 2] = Math.sin(th) * r * 0.62 + gauss() * 0.05
     col[i] = Math.min(Math.max(0.22 + s * 0.45 + gauss() * 0.05, 0), 1)
     // white-hot waist where everything converges

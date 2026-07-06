@@ -21,10 +21,10 @@ const CARDS = [
     figure: '10+',
     title: 'Connected study tools',
     copy: 'From AI Teacher to Worksheet Solver — flashcards, quizzes, summaries and focus tools in one environment.',
-    enter: 0.08, // u (0..1 inside the stats window) where the card materializes
-    exit: 0.9,
-    theta0: 0.3, // orbit angle at entry (0 = front center, +x = right)
-    sweep: 2.4, // radians swept over the rest of the window (to the left/back)
+    enter: 0.06, // u (0..1 inside the stats window) where the card materializes
+    exit: 0.64, // hands off just before card 2 reaches the front
+    theta0: 0.35, // orbit angle at entry (0 = front center, +x = right)
+    sweep: 1.7, // radians swept over the rest of the window (to the left/back)
     y0: 30,
     rz: -2,
     phase: 0,
@@ -34,10 +34,10 @@ const CARDS = [
     figure: '12–18',
     title: 'Built for school students',
     copy: 'Arabic and English curricula across Jordan and the wider Arab region — grounded in your own textbook.',
-    enter: 0.36,
+    enter: 0.28,
     exit: 2,
-    theta0: 0.85,
-    sweep: 2.0,
+    theta0: 0.8,
+    sweep: 2.4, // clears the front before card 3 arrives
     y0: -20,
     rz: 2,
     phase: 2.1,
@@ -47,10 +47,10 @@ const CARDS = [
     figure: '24/7',
     title: 'Help whenever you study',
     copy: 'Ask about your exact lesson — explanations, examples and step-by-step solutions, any time.',
-    enter: 0.56,
+    enter: 0.42,
     exit: 2,
-    theta0: 1.15,
-    sweep: 1.8,
+    theta0: 0.85,
+    sweep: 2.2, // front moment lands before the section fade-out begins
     y0: -150,
     rz: 3,
     phase: 4.2,
@@ -95,8 +95,8 @@ function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
 
   const opacity = useTransform(u, (uv) => {
     const th = cardTheta(card, uv)
-    const depth = 0.25 + 0.75 * Math.pow(Math.max(Math.cos(th), 0), 1.2)
-    const entered = smooth(card.enter, card.enter + 0.09, uv)
+    const depth = 0.45 + 0.55 * Math.pow(Math.max(Math.cos(th), 0), 1.2)
+    const entered = smooth(card.enter, card.enter + 0.07, uv)
     const exited = 1 - smooth(card.exit - 0.08, card.exit, uv)
     return depth * entered * exited
   })
@@ -104,9 +104,9 @@ function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
   const filter = useTransform(u, (uv) => {
     const th = cardTheta(card, uv)
     const d = (1 - Math.cos(th)) / 2
-    const entry = 1 - smooth(card.enter, card.enter + 0.09, uv)
-    const blur = d * 4.5 + entry * 10
-    const bright = 1 - 0.4 * d
+    const entry = 1 - smooth(card.enter, card.enter + 0.07, uv)
+    const blur = d * 2.0 + entry * 8
+    const bright = 1 - 0.25 * d
     return `blur(${blur.toFixed(2)}px) brightness(${bright.toFixed(3)})`
   })
 
