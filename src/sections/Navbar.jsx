@@ -1,15 +1,8 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { NAV_LABELS } from '../scrollMap.js'
 
 // Floating frosted pill nav — the section label morphs as you travel.
-const LABELS = [
-  [0.0, 'ORIGIN'],
-  [0.24, 'STRUCTURE'],
-  [0.46, 'FLOW'],
-  [0.68, 'VOYAGE'],
-  [0.84, 'COSMOS'],
-]
-
 const LINKS = ['Product', 'Solutions', 'Pricing', 'Docs']
 
 export default function Navbar({ progress }) {
@@ -17,8 +10,8 @@ export default function Navbar({ progress }) {
 
   useEffect(() => {
     const update = (p) => {
-      let next = LABELS[0][1]
-      for (const [at, name] of LABELS) if (p >= at) next = name
+      let next = NAV_LABELS[0][1]
+      for (const [at, name] of NAV_LABELS) if (p >= at) next = name
       setLabel((prev) => (prev === next ? prev : next))
     }
     update(progress.get())

@@ -1,9 +1,14 @@
 import { motion, useTransform } from 'framer-motion'
+import { FOOTER } from '../scrollMap.js'
 
 // Compact footer that settles in at the very end of the voyage.
 export default function Footer({ progress }) {
   // keyframes span 0..1 — see the ScrollTimeline note in Hero.jsx
-  const opacity = useTransform(progress, [0, 0.965, 0.995, 1], [0, 0, 1, 1])
+  const opacity = useTransform(
+    progress,
+    [0, FOOTER.start, FOOTER.inEnd, 1],
+    [0, 0, 1, 1],
+  )
   const pointerEvents = useTransform(opacity, (o) => (o > 0.25 ? 'auto' : 'none'))
 
   return (
