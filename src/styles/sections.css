@@ -158,7 +158,7 @@
   font-size: clamp(38px, 5.6vw, 64px);
 }
 .hero-sub {
-  max-width: 560px;
+  max-width: 600px;
 }
 .hero-btns {
   margin-top: 8px;
@@ -170,6 +170,7 @@
   align-items: center;
   justify-content: center;
   perspective: 1200px;
+  --card-w: min(330px, 78vw);
 }
 .stat-pos {
   position: absolute;
@@ -185,7 +186,7 @@
   top: 48%;
 }
 .stat-card {
-  width: min(330px, 78vw);
+  width: var(--card-w);
   padding: 26px 28px 30px;
 }
 .stat-tilt-left {
@@ -289,7 +290,7 @@
   pointer-events: auto !important;
 }
 .eco-sub {
-  max-width: 620px;
+  max-width: 600px;
   font-size: 14px;
 }
 
@@ -336,56 +337,126 @@
   color: var(--ink-faint);
 }
 
-/* ---------- responsive ---------- */
+/* ---------- responsive ----------
+   Bands: ≤1080 tablet stacking · ≤900 nav condensation · ≤600 phone */
+
+@media (max-width: 1080px) {
+  .stats {
+    --card-w: min(420px, 86vw);
+  }
+  .stat-left {
+    left: 50%;
+    top: 15%;
+    margin-left: calc(var(--card-w) / -2);
+  }
+  .stat-right {
+    right: auto;
+    left: 50%;
+    top: 52%;
+    margin-left: calc(var(--card-w) / -2);
+  }
+  .stat-tilt-left {
+    transform: rotateX(3deg) rotateZ(-1deg);
+  }
+  .stat-tilt-right {
+    transform: rotateX(-2deg) rotateZ(1deg);
+  }
+  .growth {
+    flex-direction: column;
+    justify-content: flex-start;
+    /* the right column rides 40px higher than the left (parallax delta),
+       so the at-rest gap is inflated to keep ~48px effective clearance */
+    gap: 88px;
+  }
+  .growth-left {
+    margin-top: 16vh;
+    max-width: 680px;
+  }
+  .growth-right {
+    margin-top: 0;
+    max-width: 600px;
+  }
+  .ecosystem {
+    padding: 12vh 32px;
+  }
+}
 
 @media (max-width: 900px) {
   .nav-links,
   .nav-signin {
     display: none;
   }
-  .eyebrow {
-    font-size: 10px;
-    letter-spacing: 0.3em;
-  }
   .nav {
     gap: 16px;
   }
-  .stat-left {
-    left: 50%;
-    top: 16%;
-    margin-left: min(-165px, -39vw);
-  }
-  .stat-right {
-    right: auto;
-    left: 50%;
-    top: 52%;
-    margin-left: min(-165px, -39vw);
-  }
-  .stat-tilt-left {
-    transform: rotateZ(-1deg);
-  }
-  .stat-tilt-right {
-    transform: rotateZ(1deg);
-  }
-  .growth {
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 34px;
-  }
-  .growth-left {
-    margin-top: 18vh;
-  }
-  .growth-right {
-    margin-top: 0;
-    max-width: 560px;
-  }
-  .ecosystem {
-    padding-top: 12vh;
-  }
-  .eco-btns {
-    flex-direction: column;
-  }
   .footer-fine {
     display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    gap: 10px;
+  }
+  .eyebrow .rule,
+  .eyebrow .num {
+    display: none;
+  }
+  .nav {
+    height: 52px;
+    gap: 12px;
+    padding: 0 8px 0 16px;
+  }
+  .nav-section {
+    min-width: 0;
+  }
+  .nav-cta {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 12px;
+  }
+  .btn-row {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 340px;
+  }
+  .hero {
+    /* clear the fixed nav pill (22px top + 52px tall) */
+    padding-top: 84px;
+  }
+  .hero-inner {
+    gap: 22px;
+  }
+  .stats {
+    --card-w: min(340px, 90vw);
+  }
+  .stat-left {
+    top: 13%;
+  }
+  .stat-right {
+    top: 53%;
+  }
+  .growth {
+    gap: 76px;
+    padding: 0 20px;
+  }
+  .growth-left {
+    margin-top: 12vh;
+  }
+  .growth-right .btn-row {
+    max-width: none;
+  }
+  .ecosystem {
+    padding: 11vh 20px 13vh;
+  }
+  .eco-btns {
+    width: 100%;
+    max-width: 340px;
+  }
+  .footer-tagline {
+    font-size: 11px;
   }
 }

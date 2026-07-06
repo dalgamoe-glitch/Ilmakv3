@@ -21,7 +21,7 @@ export default function Hero({ progress }) {
       style={{ opacity, y, scale, pointerEvents }}
       aria-label="Intro"
     >
-      <div className="hero-inner">
+      <div className="hero-inner text-scrim">
         <p className="eyebrow">
           <span className="num">01</span>
           <span className="rule" />

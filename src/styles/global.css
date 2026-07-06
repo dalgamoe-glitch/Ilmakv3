@@ -3,8 +3,8 @@
   --bg: #050208;
   --bg-soft: #0b0512;
   --ink: #f8f7fb;
-  --ink-dim: rgba(248, 247, 251, 0.62);
-  --ink-faint: rgba(248, 247, 251, 0.38);
+  --ink-dim: rgba(248, 247, 251, 0.75);
+  --ink-faint: rgba(248, 247, 251, 0.5);
   --lavender: #a78bfa;
   --violet: #7c3aed;
   --pink: #ec4899;
@@ -78,6 +78,7 @@ button {
   letter-spacing: 0.42em;
   text-transform: uppercase;
   color: var(--ink-dim);
+  white-space: nowrap;
 }
 .eyebrow .num {
   color: var(--ink-faint);
@@ -95,9 +96,12 @@ button {
 .headline {
   font-weight: 300;
   letter-spacing: -0.03em;
-  line-height: 1.08;
+  line-height: 1.1;
   color: var(--ink);
   text-wrap: balance;
+  text-shadow:
+    0 2px 24px rgba(5, 2, 8, 0.9),
+    0 0 8px rgba(5, 2, 8, 0.55);
 }
 
 .sub {
@@ -106,6 +110,27 @@ button {
   line-height: 1.65;
   font-size: 15px;
   text-wrap: pretty;
+  text-shadow: 0 1px 14px rgba(5, 2, 8, 0.95);
+}
+
+/* soft dark pocket behind text blocks so copy reads over bright particles
+   without hiding the background */
+.text-scrim {
+  position: relative;
+  z-index: 0;
+}
+.text-scrim::before {
+  content: '';
+  position: absolute;
+  inset: -6% -8%;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 50%,
+    rgba(5, 2, 8, 0.66),
+    rgba(5, 2, 8, 0.34) 55%,
+    transparent 78%
+  );
+  pointer-events: none;
 }
 
 /* pill buttons — as in reference: solid-ish glass primary + ghost secondary */
@@ -117,8 +142,9 @@ button {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  height: 46px;
+  height: 48px;
   padding: 0 24px;
   border-radius: 999px;
   font-size: 13.5px;
@@ -142,28 +168,32 @@ button {
 
 .btn-primary {
   color: var(--ink);
-  background: linear-gradient(
-    180deg,
-    rgba(167, 139, 250, 0.16),
-    rgba(124, 58, 237, 0.1)
-  );
-  border: 1px solid rgba(167, 139, 250, 0.45);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(167, 139, 250, 0.24),
+      rgba(124, 58, 237, 0.14)
+    ),
+    rgba(10, 5, 18, 0.55);
+  border: 1px solid rgba(167, 139, 250, 0.5);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
   box-shadow:
     0 0 24px rgba(124, 58, 237, 0.22),
-    inset 0 1px 0 rgba(248, 247, 251, 0.12);
+    inset 0 1px 0 rgba(248, 247, 251, 0.14);
 }
 .btn-primary:hover {
-  background: linear-gradient(
-    180deg,
-    rgba(167, 139, 250, 0.26),
-    rgba(236, 72, 153, 0.14)
-  );
-  border-color: rgba(236, 72, 153, 0.55);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(167, 139, 250, 0.32),
+      rgba(236, 72, 153, 0.18)
+    ),
+    rgba(10, 5, 18, 0.55);
+  border-color: rgba(236, 72, 153, 0.6);
   box-shadow:
     0 0 36px rgba(236, 72, 153, 0.28),
-    inset 0 1px 0 rgba(248, 247, 251, 0.16);
+    inset 0 1px 0 rgba(248, 247, 251, 0.18);
 }
 .btn-primary .btn-orb {
   display: inline-flex;
@@ -178,29 +208,32 @@ button {
 }
 
 .btn-ghost {
-  color: var(--ink-dim);
-  border: 1px solid transparent;
+  color: var(--ink);
+  background: rgba(10, 5, 18, 0.45);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  box-shadow: inset 0 1px 0 rgba(248, 247, 251, 0.08);
 }
 .btn-ghost:hover {
-  color: var(--ink);
-  background: rgba(248, 247, 251, 0.05);
-  border-color: var(--glass-border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(248, 247, 251, 0.08);
+  border-color: rgba(248, 247, 251, 0.28);
 }
 
-/* frosted glass card — required for every floating card */
+/* frosted glass card — required for every floating card.
+   Base is opaque enough that text stays readable over dense particles. */
 .glass {
-  background: linear-gradient(
-    150deg,
-    rgba(167, 139, 250, 0.09),
-    rgba(13, 6, 22, 0.42) 45%,
-    rgba(236, 72, 153, 0.05)
-  );
+  background:
+    linear-gradient(
+      150deg,
+      rgba(167, 139, 250, 0.1),
+      rgba(236, 72, 153, 0.06) 100%
+    ),
+    rgba(10, 5, 18, 0.68);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.45),
     inset 0 1px 0 rgba(248, 247, 251, 0.1);

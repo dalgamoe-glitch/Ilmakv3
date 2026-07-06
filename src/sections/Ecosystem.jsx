@@ -18,7 +18,7 @@ export default function Ecosystem({ progress }) {
       style={{ opacity, pointerEvents }}
       aria-label="The ILMAK ecosystem"
     >
-      <motion.div className="eco-top" style={{ y: yTop }}>
+      <motion.div className="eco-top text-scrim" style={{ y: yTop }}>
         <p className="eyebrow">
           <span className="num">03</span>
           <span className="rule" />
@@ -31,7 +31,7 @@ export default function Ecosystem({ progress }) {
         </h2>
       </motion.div>
 
-      <motion.div className="eco-bottom" style={{ y: yBottom }}>
+      <motion.div className="eco-bottom text-scrim" style={{ y: yBottom }}>
         <p className="sub eco-sub">
           ILMAK is not a single chatbot. It&rsquo;s a living study ecosystem
           with your textbook at its core — AI Teacher, flashcards, quizzes,

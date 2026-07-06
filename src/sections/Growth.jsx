@@ -18,7 +18,7 @@ export default function Growth({ progress }) {
       style={{ opacity, pointerEvents }}
       aria-label="Why ILMAK"
     >
-      <motion.div className="growth-left" style={{ y: yLeft }}>
+      <motion.div className="growth-left text-scrim" style={{ y: yLeft }}>
         <p className="eyebrow left">
           <span className="num">02</span>
           <span className="rule" />
@@ -31,7 +31,7 @@ export default function Growth({ progress }) {
         </h2>
       </motion.div>
 
-      <motion.div className="growth-right" style={{ y: yRight }}>
+      <motion.div className="growth-right text-scrim" style={{ y: yRight }}>
         <p className="sub growth-sub">
           Hundreds of pages. One centre of gravity. We turn the noise of a big
           textbook into a focused study session for your exact lesson.
