@@ -171,7 +171,7 @@
   justify-content: center;
   perspective: 1100px;
   overflow: hidden;
-  --card-w: min(330px, 78vw);
+  --card-w: min(360px, 78vw);
 }
 
 /* card riding the 3D orbit around the helix (transform set from JS) */
