@@ -174,14 +174,24 @@
   --card-w: min(360px, 78vw);
 }
 
-/* card riding the 3D orbit around the helix (transform set from JS) */
+/* card riding the 3D orbit around the helix (transform set from JS).
+   No filter (and will-change must not hint one) — an ancestor filter would
+   sever the card's backdrop-filter from the particle canvas. */
 .orbit-card {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform-style: preserve-3d;
-  will-change: transform, opacity, filter;
+  /* flat transform-style on purpose: a preserve-3d rendering context breaks
+     backdrop-filter in Chromium; the parent's perspective still gives the
+     rotateY its depth */
+  will-change: transform, opacity;
   pointer-events: auto !important;
+}
+
+/* content layer inside the glass — carries entry/depth blur safely */
+.card-inner {
+  position: relative;
+  padding: 26px 28px 30px;
 }
 
 /* scroll-velocity ghost copies of the card content (motion echo) */
@@ -214,7 +224,6 @@
 .stat-card {
   position: relative;
   width: var(--card-w);
-  padding: 26px 28px 30px;
 }
 .stat-tilt-left {
   transform: rotateY(16deg) rotateX(4deg) rotateZ(-2deg);

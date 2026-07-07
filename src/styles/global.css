@@ -171,29 +171,30 @@ button {
   background:
     linear-gradient(
       180deg,
-      rgba(167, 139, 250, 0.24),
-      rgba(124, 58, 237, 0.14)
+      rgba(167, 139, 250, 0.3),
+      rgba(124, 58, 237, 0.16)
     ),
-    rgba(10, 5, 18, 0.55);
-  border: 1px solid rgba(167, 139, 250, 0.5);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+    rgba(12, 6, 20, 0.3);
+  border: 1px solid rgba(167, 139, 250, 0.55);
+  backdrop-filter: blur(20px) saturate(160%) brightness(0.75);
+  -webkit-backdrop-filter: blur(20px) saturate(160%) brightness(0.75);
   box-shadow:
     0 0 24px rgba(124, 58, 237, 0.22),
-    inset 0 1px 0 rgba(248, 247, 251, 0.14);
+    inset 0 1px 0 rgba(248, 247, 251, 0.16);
 }
 .btn-primary:hover {
+  transform: translateY(-1px);
   background:
     linear-gradient(
       180deg,
-      rgba(167, 139, 250, 0.32),
-      rgba(236, 72, 153, 0.18)
+      rgba(167, 139, 250, 0.38),
+      rgba(236, 72, 153, 0.2)
     ),
-    rgba(10, 5, 18, 0.55);
+    rgba(12, 6, 20, 0.3);
   border-color: rgba(236, 72, 153, 0.6);
   box-shadow:
-    0 0 36px rgba(236, 72, 153, 0.28),
-    inset 0 1px 0 rgba(248, 247, 251, 0.18);
+    0 0 36px rgba(236, 72, 153, 0.3),
+    inset 0 1px 0 rgba(248, 247, 251, 0.2);
 }
 .btn-primary .btn-orb {
   display: inline-flex;
@@ -209,34 +210,38 @@ button {
 
 .btn-ghost {
   color: var(--ink);
-  background: rgba(10, 5, 18, 0.45);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(14px) saturate(130%);
-  -webkit-backdrop-filter: blur(14px) saturate(130%);
-  box-shadow: inset 0 1px 0 rgba(248, 247, 251, 0.08);
+  background: rgba(12, 6, 20, 0.26);
+  border: 1px solid rgba(248, 247, 251, 0.22);
+  backdrop-filter: blur(18px) saturate(150%) brightness(0.78);
+  -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(0.78);
+  box-shadow: inset 0 1px 0 rgba(248, 247, 251, 0.1);
 }
 .btn-ghost:hover {
-  background: rgba(248, 247, 251, 0.08);
-  border-color: rgba(248, 247, 251, 0.28);
+  transform: translateY(-1px);
+  background: rgba(248, 247, 251, 0.09);
+  border-color: rgba(248, 247, 251, 0.32);
 }
 
 /* frosted glass card — required for every floating card.
-   Base is opaque enough that text stays readable over dense particles. */
+   Truly transparent: readability comes from the backdrop-filter itself
+   (heavy blur + brightness dim on whatever shines through), not from an
+   opaque base layer. */
 .glass {
   background:
     linear-gradient(
       150deg,
-      rgba(167, 139, 250, 0.1),
-      rgba(236, 72, 153, 0.06) 100%
+      rgba(167, 139, 250, 0.12),
+      rgba(236, 72, 153, 0.07) 100%
     ),
-    rgba(10, 5, 18, 0.68);
-  border: 1px solid var(--glass-border);
+    rgba(12, 6, 20, 0.32);
+  border: 1px solid rgba(248, 247, 251, 0.18);
   border-radius: 20px;
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(26px) saturate(170%) brightness(0.7);
+  -webkit-backdrop-filter: blur(26px) saturate(170%) brightness(0.7);
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(248, 247, 251, 0.1);
+    inset 0 1px 0 rgba(248, 247, 251, 0.16),
+    inset 0 0 44px rgba(167, 139, 250, 0.06);
 }
 
 /* fixed full-viewport overlay wrapper for scenes */

@@ -42,8 +42,10 @@ export default function Growth({ progress }) {
 
       <motion.div className="growth-right text-scrim" style={{ y: yRight }}>
         <p className="sub growth-sub">
-          Hundreds of pages. One centre of gravity. We turn the noise of a big
-          textbook into a focused study session for your exact lesson.
+          Hundreds of pages of Tawjihi and school books. One centre of
+          gravity. ILMAK pulls the exact lesson you need out of the noise and
+          builds your whole study session around it — so studying stops
+          feeling like drowning.
         </p>
         <div className="btn-row">
           <a className="btn btn-primary" href="#top">
