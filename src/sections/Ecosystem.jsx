@@ -34,9 +34,11 @@ export default function Ecosystem({ progress }) {
 
       <motion.div className="eco-bottom text-scrim" style={{ y: yBottom }}>
         <p className="sub eco-sub">
-          ILMAK is not a single chatbot. It&rsquo;s a living study ecosystem
-          with your textbook at its core — AI Teacher, flashcards, quizzes,
-          summaries, and a worksheet solver orbiting around you.
+          ILMAK is not another chatbot. It&rsquo;s a complete study ecosystem
+          built around your own textbook — AI Teacher, book segmentation,
+          flashcards, quizzes, keynotes, worksheet solver and focus tools,
+          all orbiting you. So the night before the exam feels calm, not
+          terrifying.
         </p>
         <div className="btn-row eco-btns">
           <a className="btn btn-primary" href="#top">

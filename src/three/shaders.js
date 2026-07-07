@@ -10,6 +10,7 @@ export const particleVertex = /* glsl */ `
   uniform float uSize;
   uniform float uDrift;
   uniform float uPixelRatio;
+  uniform float uVel; // smoothed |scroll velocity| in scene units/s
 
   attribute vec3 aPos1;
   attribute vec3 aPos2;
@@ -26,6 +27,7 @@ export const particleVertex = /* glsl */ `
 
   varying float vCol;
   varying float vTwinkle;
+  varying float vFade;
 
   // per-particle staggered segment progress → organic dissolve, not a lerp
   float prog(float idx) {
@@ -69,12 +71,14 @@ export const particleVertex = /* glsl */ `
                  + t5 * (1.0 - t5) * 3.4
                  + t6 * (1.0 - t6) * 3.4
                  + t7 * (1.0 - t7) * 3.4;
+    // scroll velocity feeds energy into the transit turbulence — scrubbing
+    // fast makes the swarm churn harder, easing off lets it settle
     float ph = aRand * 6.2831;
     pos += vec3(
       sin(uTime * 0.9 + ph + pos.y * 0.5),
       cos(uTime * 0.8 + ph * 1.7 + pos.x * 0.4),
       sin(uTime * 0.7 + ph * 2.3)
-    ) * travel;
+    ) * travel * (1.0 + 0.85 * uVel);
 
     // the merge: particles get sucked down and inward entering the funnel
     float suck = t2 * (1.0 - t2) * 4.0;
@@ -110,19 +114,29 @@ export const particleVertex = /* glsl */ `
     pos.yz = rot(pos.yz, tilt);
     pos.y -= 2.3 * wGal;
 
-    // ambient per-particle drift so the field always feels alive
+    // ambient per-particle drift so the field always feels alive,
+    // plus a fine fast shimmer octave for micro-detail
     pos += vec3(
       sin(uTime * 0.6 + ph + pos.y * 0.33),
       cos(uTime * 0.5 + ph * 2.0 + pos.x * 0.29),
       sin(uTime * 0.4 + ph * 3.1)
     ) * uDrift;
+    pos += vec3(
+      sin(uTime * 2.3 + ph * 7.0),
+      cos(uTime * 2.1 + ph * 5.0),
+      sin(uTime * 1.9 + ph * 3.0)
+    ) * uDrift * 0.35;
 
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mv;
-    gl_PointSize = uSize * aSize * uPixelRatio * (26.0 / -mv.z);
+    gl_PointSize = uSize * aSize * uPixelRatio * (26.0 / -mv.z)
+                 * (1.0 + 0.22 * uVel * aRand);
 
     vCol = col;
-    vTwinkle = 0.72 + 0.28 * sin(uTime * (1.5 + aRand * 2.5) + ph * 4.0);
+    vTwinkle = (0.72 + 0.28 * sin(uTime * (1.5 + aRand * 2.5) + ph * 4.0))
+             * (1.0 + 0.15 * uVel);
+    // atmospheric depth: particles far from the lens dissolve into haze
+    vFade = smoothstep(48.0, 16.0, -mv.z);
   }
 `
 
@@ -133,6 +147,7 @@ export const particleFragment = /* glsl */ `
 
   varying float vCol;
   varying float vTwinkle;
+  varying float vFade;
 
   vec3 grad(float c) {
     vec3 lav = vec3(0.655, 0.545, 0.980);   /* #A78BFA */
@@ -149,7 +164,7 @@ export const particleFragment = /* glsl */ `
     if (d > 0.5) discard;
     float halo = smoothstep(0.5, 0.04, d) * 0.5;
     float core = smoothstep(0.24, 0.0, d);
-    float a = (halo + core) * vTwinkle * uAlpha;
+    float a = (halo + core) * vTwinkle * uAlpha * (0.45 + 0.55 * vFade);
     gl_FragColor = vec4(grad(vCol) * a, a);
   }
 `

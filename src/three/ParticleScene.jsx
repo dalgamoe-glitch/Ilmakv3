@@ -104,6 +104,7 @@ export default function ParticleScene({ progress }) {
         uDrift: { value: reducedMotion ? 0.04 : 0.22 },
         uPixelRatio: { value: pixelRatio },
         uAlpha: { value: 1 },
+        uVel: { value: 0 },
       },
       transparent: true,
       depthWrite: false,
@@ -150,13 +151,32 @@ export default function ParticleScene({ progress }) {
 
     const clock = new THREE.Clock()
     let raf = 0
+    // inertial scene value: the swarm chases the scroll target with a short
+    // time constant, so scrubbing feels like moving mass, not a slider
+    let sceneSmooth = null
+    let velSmooth = 0
+    let lastT = 0
     const tick = () => {
       const t = clock.getElapsedTime()
+      const dt = Math.min(Math.max(t - lastT, 1e-4), 0.05)
+      lastT = t
       const p = typeof progress?.get === 'function' ? progress.get() : 0
-      const sceneF = progressToScene(p)
+      const target = progressToScene(p)
+      if (sceneSmooth === null) sceneSmooth = target
+      const prev = sceneSmooth
+      if (reducedMotion) {
+        sceneSmooth = target
+      } else {
+        sceneSmooth += (target - sceneSmooth) * (1 - Math.exp(-dt / 0.11))
+      }
+      const vel = Math.abs(sceneSmooth - prev) / dt
+      velSmooth +=
+        (Math.min(vel * 0.9, 2.2) - velSmooth) * (1 - Math.exp(-dt / 0.18))
+      const sceneF = sceneSmooth
 
       mat.uniforms.uTime.value = t
       mat.uniforms.uScene.value = sceneF
+      mat.uniforms.uVel.value = reducedMotion ? 0 : velSmooth
       stars.material.uniforms.uTime.value = t
 
       // occluder appears only around the black-hole scene (6)

@@ -35,13 +35,13 @@ export default function Hero({ progress }) {
           the nature of studying
         </h1>
         <p className="sub hero-sub">
-          ILMAK builds your study ecosystem at the intersection of your
-          textbook, AI, and understanding — upload your book, understand your
-          lessons, study with confidence.
+          ILMAK (علمك) turns the exact textbook you study in Jordan into your
+          own AI teacher — upload your book, ask it anything, and walk into
+          every exam already knowing you&rsquo;ve got this.
         </p>
         <div className="btn-row hero-btns">
           <a className="btn btn-primary" href="#top">
-            Get started <span className="btn-orb">→</span>
+            Start studying free <span className="btn-orb">→</span>
           </a>
           <a className="btn btn-ghost" href="#top">
             See how it works

@@ -17,10 +17,10 @@ import { STATS } from '../scrollMap.js'
 
 const CARDS = [
   {
-    eyebrow: 'LEARNING',
-    figure: '10+',
-    title: 'Connected study tools',
-    copy: 'From AI Teacher to Worksheet Solver — flashcards, quizzes, summaries and focus tools in one environment.',
+    eyebrow: 'AI TEACHER',
+    figure: '24/7',
+    title: 'Your private AI teacher',
+    copy: 'Ask anything about your exact lesson — it answers from your own textbook, in Arabic or English, even at 2am before the exam.',
     enter: 0.06, // u (0..1 inside the stats window) where the card materializes
     exit: 0.64, // hands off just before card 2 reaches the front
     theta0: 0.35, // orbit angle at entry (0 = front center, +x = right)
@@ -30,23 +30,23 @@ const CARDS = [
     phase: 0,
   },
   {
-    eyebrow: 'STUDENTS',
-    figure: '12–18',
-    title: 'Built for school students',
-    copy: 'Arabic and English curricula across Jordan and the wider Arab region — grounded in your own textbook.',
+    eyebrow: 'FLASHCARDS & QUIZZES',
+    figure: '1 tap',
+    title: 'Revision that makes itself',
+    copy: 'Every lesson becomes flashcards, quizzes and keynotes automatically — hours of prep done before you even sit down.',
     enter: 0.28,
     exit: 2,
     theta0: 0.8,
-    sweep: 2.4, // clears the front before card 3 arrives
+    sweep: 2.9, // clears the front before card 3 arrives
     y0: -20,
     rz: 2,
     phase: 2.1,
   },
   {
-    eyebrow: 'AI TEACHER',
-    figure: '24/7',
-    title: 'Help whenever you study',
-    copy: 'Ask about your exact lesson — explanations, examples and step-by-step solutions, any time.',
+    eyebrow: 'WORKSHEET SOLVER',
+    figure: 'A+',
+    title: 'Every step, explained',
+    copy: 'Snap any worksheet or past paper and get full step-by-step solutions you actually understand — not just the final answer.',
     enter: 0.42,
     exit: 2,
     theta0: 0.85,
@@ -93,15 +93,22 @@ function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
     )
   })
 
+  // NOTE: the wrapper must stay free of CSS `filter`, and its opacity must
+  // be exactly 1 at the front — an ancestor filter (even blur(0)) or
+  // opacity < 1 creates a new backdrop root, which cuts the card's
+  // backdrop-filter off from the particle canvas and kills the frosting.
   const opacity = useTransform(u, (uv) => {
     const th = cardTheta(card, uv)
     const depth = 0.45 + 0.55 * Math.pow(Math.max(Math.cos(th), 0), 1.2)
     const entered = smooth(card.enter, card.enter + 0.07, uv)
     const exited = 1 - smooth(card.exit - 0.08, card.exit, uv)
-    return depth * entered * exited
+    const o = depth * entered * exited
+    return o > 0.985 ? 1 : o
   })
 
-  const filter = useTransform(u, (uv) => {
+  // entry + depth blur live on the inner content, where they can't break
+  // the glass backdrop chain
+  const innerFilter = useTransform(u, (uv) => {
     const th = cardTheta(card, uv)
     const d = (1 - Math.cos(th)) / 2
     const entry = 1 - smooth(card.enter, card.enter + 0.07, uv)
@@ -119,22 +126,24 @@ function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
   const echoO2 = useTransform(echoO, (o) => o * 0.5)
 
   return (
-    <motion.div className="orbit-card" style={{ transform, opacity, filter, zIndex }}>
+    <motion.div className="orbit-card" style={{ transform, opacity, zIndex }}>
       <article className="glass stat-card">
-        <CardBody card={card} />
-        <motion.div
-          className="card-echo"
-          style={{ x: echoPx, opacity: echoO }}
-          aria-hidden="true"
-        >
+        <motion.div className="card-inner" style={{ filter: innerFilter }}>
           <CardBody card={card} />
-        </motion.div>
-        <motion.div
-          className="card-echo card-echo-far"
-          style={{ x: echoPx2, opacity: echoO2 }}
-          aria-hidden="true"
-        >
-          <CardBody card={card} />
+          <motion.div
+            className="card-echo"
+            style={{ x: echoPx, opacity: echoO }}
+            aria-hidden="true"
+          >
+            <CardBody card={card} />
+          </motion.div>
+          <motion.div
+            className="card-echo card-echo-far"
+            style={{ x: echoPx2, opacity: echoO2 }}
+            aria-hidden="true"
+          >
+            <CardBody card={card} />
+          </motion.div>
         </motion.div>
       </article>
     </motion.div>
@@ -191,12 +200,16 @@ export default function Stats({ progress }) {
       >
         <div className="stat-pos stat-left">
           <article className="glass stat-card stat-tilt-left">
-            <CardBody card={CARDS[0]} />
+            <div className="card-inner">
+              <CardBody card={CARDS[0]} />
+            </div>
           </article>
         </div>
         <div className="stat-pos stat-right">
           <article className="glass stat-card stat-tilt-right">
-            <CardBody card={CARDS[1]} />
+            <div className="card-inner">
+              <CardBody card={CARDS[1]} />
+            </div>
           </article>
         </div>
       </motion.section>
