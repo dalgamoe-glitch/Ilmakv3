@@ -15,45 +15,93 @@ import { STATS } from '../scrollMap.js'
 // reference clip. Card text carries a scroll-velocity echo (ghost copies
 // that trail while scrubbing and collapse at rest).
 
+// Six feature cards, one per ILMAK selling point. Choreography contract
+// (keeps every pair of visible cards from ever overlapping):
+//  - enters are 0.14u apart; each card exits at enter+0.27, so cards i and
+//    i+2 — which share a vertical band — are never visible together;
+//  - consecutive cards alternate top (y0 < 0) / bottom (y0 > 0) bands whose
+//    rects can't intersect vertically (band offset 142 > cardHeight/2 + bob
+//    + rotateZ bleed), and perspective scales offset and size together, so
+//    the bands never cross at any orbit angle;
+//  - front moment (theta = 0) lands at enter + theta0/sweep ≈ enter + 0.13.
 const CARDS = [
   {
-    eyebrow: 'AI TEACHER',
+    eyebrow: 'AI TUTOR',
     figure: '24/7',
-    title: 'Your private AI teacher',
-    copy: 'Ask anything about your exact lesson — it answers from your own textbook, in Arabic or English, even at 2am before the exam.',
-    enter: 0.06, // u (0..1 inside the stats window) where the card materializes
-    exit: 0.64, // hands off just before card 2 reaches the front
-    theta0: 0.35, // orbit angle at entry (0 = front center, +x = right)
-    sweep: 1.7, // radians swept over the rest of the window (to the left/back)
-    y0: 30,
-    rz: -2,
+    title: 'Your private AI tutor',
+    copy: 'Ask anything about your exact lesson — answers from your own textbook, in Arabic or English.',
+    enter: 0.04,
+    exit: 0.31,
+    theta0: 0.42, // orbit angle at entry (0 = front center, +x = right)
+    sweep: 3.2, // radians swept after entry (to the left/back)
+    y0: -142,
+    rz: -1.5,
     phase: 0,
   },
   {
-    eyebrow: 'FLASHCARDS & QUIZZES',
+    eyebrow: 'FLASHCARDS',
     figure: '1 tap',
     title: 'Revision that makes itself',
-    copy: 'Every lesson becomes flashcards, quizzes and keynotes automatically — hours of prep done before you even sit down.',
-    enter: 0.28,
-    exit: 2,
-    theta0: 0.8,
-    sweep: 2.9, // clears the front before card 3 arrives
-    y0: -20,
-    rz: 2,
+    copy: 'Every lesson becomes flashcards automatically — hours of prep done before you sit down.',
+    enter: 0.18,
+    exit: 0.45,
+    theta0: 0.42,
+    sweep: 3.2,
+    y0: 142,
+    rz: 1.5,
     phase: 2.1,
+  },
+  {
+    eyebrow: 'QUIZ GENERATION',
+    figure: '∞',
+    title: 'Unlimited practice quizzes',
+    copy: 'Generate fresh quizzes from your exact lesson until you walk into the exam already sure.',
+    enter: 0.32,
+    exit: 0.59,
+    theta0: 0.42,
+    sweep: 3.2,
+    y0: -142,
+    rz: 1.2,
+    phase: 4.2,
   },
   {
     eyebrow: 'WORKSHEET SOLVER',
     figure: 'A+',
     title: 'Every step, explained',
-    copy: 'Snap any worksheet or past paper and get full step-by-step solutions you actually understand — not just the final answer.',
-    enter: 0.42,
-    exit: 2,
-    theta0: 0.85,
-    sweep: 2.2, // front moment lands before the section fade-out begins
-    y0: -150,
-    rz: 3,
-    phase: 4.2,
+    copy: 'Snap any worksheet or past paper and get step-by-step solutions you actually understand.',
+    enter: 0.46,
+    exit: 0.73,
+    theta0: 0.42,
+    sweep: 3.2,
+    y0: 142,
+    rz: -1.2,
+    phase: 1.3,
+  },
+  {
+    eyebrow: 'KEYNOTES',
+    figure: '5 min',
+    title: 'A whole lesson in five minutes',
+    copy: 'Key ideas distilled into sharp revision notes — perfect for the night before the exam.',
+    enter: 0.6,
+    exit: 0.87,
+    theta0: 0.42,
+    sweep: 3.2,
+    y0: -142,
+    rz: 1.5,
+    phase: 3.4,
+  },
+  {
+    eyebrow: 'YOUR TEXTBOOK',
+    figure: '100%',
+    title: 'Built on your exact book',
+    copy: 'Upload your textbook once — every chapter becomes its own smart study space.',
+    enter: 0.74,
+    exit: 2, // the section fade-out retires it
+    theta0: 0.42,
+    sweep: 3.2,
+    y0: 142,
+    rz: -1.5,
+    phase: 5.1,
   },
 ]
 
@@ -81,7 +129,7 @@ function CardBody({ card }) {
 function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
   const transform = useTransform([u, time], ([uv, tv]) => {
     const th = cardTheta(card, uv)
-    const bob = Math.sin((tv / 1000) * 0.7 + card.phase) * 6
+    const bob = Math.sin((tv / 1000) * 0.7 + card.phase) * 5
     const x = radius * Math.sin(th)
     const y = card.y0 * laneScale + bob
     const z = radius * (Math.cos(th) - 1)
@@ -170,11 +218,11 @@ export default function Stats({ progress }) {
     Math.max(-16, Math.min(16, v * 240)),
   )
 
-  // narrow screens compress the orbit sideways, so the y-lanes spread out
-  // instead — keeps a receding card from stacking on the front one
+  // narrow screens compress the orbit sideways, so the y-bands spread out
+  // instead — keeps the top/bottom bands clearly separated
   const measure = () => {
     const radius = Math.min(480, window.innerWidth * 0.42)
-    const spread = radius < 340 ? 1.5 : 1
+    const spread = radius < 340 ? 1.3 : 1
     return {
       radius,
       laneScale: Math.min(1, window.innerHeight / 760) * spread,
@@ -191,12 +239,12 @@ export default function Stats({ progress }) {
   }, [])
 
   if (reducedMotion) {
-    // static pinned layout, no orbit or echoes
+    // static pinned layout, no orbit or echoes — three representative cards
     return (
       <motion.section
         className="overlay stats"
         style={{ opacity, pointerEvents }}
-        aria-label="ILMAK in numbers"
+        aria-label="ILMAK features"
       >
         <div className="stat-pos stat-left">
           <article className="glass stat-card stat-tilt-left">
@@ -208,7 +256,14 @@ export default function Stats({ progress }) {
         <div className="stat-pos stat-right">
           <article className="glass stat-card stat-tilt-right">
             <div className="card-inner">
-              <CardBody card={CARDS[1]} />
+              <CardBody card={CARDS[2]} />
+            </div>
+          </article>
+        </div>
+        <div className="stat-pos stat-bottom">
+          <article className="glass stat-card stat-tilt-left">
+            <div className="card-inner">
+              <CardBody card={CARDS[3]} />
             </div>
           </article>
         </div>
@@ -220,7 +275,7 @@ export default function Stats({ progress }) {
     <motion.section
       className="overlay stats"
       style={{ opacity, pointerEvents }}
-      aria-label="ILMAK in numbers"
+      aria-label="ILMAK features"
     >
       {CARDS.map((card) => (
         <OrbitCard

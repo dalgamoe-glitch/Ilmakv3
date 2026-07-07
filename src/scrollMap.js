@@ -8,25 +8,26 @@
 // appends an implicit keyframe at offset 1 using the element's base value
 // if the range ends early (elements would fade back in down the page).
 
-export const TRACK_VH = 850
+export const TRACK_VH = 1100
 
 // [progress, scene] pairs — flat segments are holds on a formation.
+// The helix hold is long on purpose: six feature cards orbit it.
 export const SCENE_KEYS = [
   [0.0, 0],
-  [0.08, 0],
-  [0.14, 1],
-  [0.17, 1],
-  [0.23, 2],
-  [0.26, 2],
-  [0.31, 3],
-  [0.34, 3],
-  [0.42, 4],
-  [0.6, 4],
-  [0.66, 5],
-  [0.73, 5],
-  [0.79, 6],
-  [0.84, 6],
-  [0.91, 7],
+  [0.07, 0],
+  [0.115, 1],
+  [0.145, 1],
+  [0.19, 2],
+  [0.22, 2],
+  [0.26, 3],
+  [0.29, 3],
+  [0.37, 4],
+  [0.69, 4],
+  [0.74, 5],
+  [0.795, 5],
+  [0.845, 6],
+  [0.885, 6],
+  [0.93, 7],
   [1.0, 7],
 ]
 
@@ -42,21 +43,21 @@ export function progressToScene(p) {
 }
 
 // Overlay visibility windows in progress space.
-export const HERO = { holdEnd: 0.02, fadeStart: 0.07, fadeEnd: 0.12 }
-export const STATS = { start: 0.3, inEnd: 0.335, outStart: 0.575, end: 0.625 }
+export const HERO = { holdEnd: 0.02, fadeStart: 0.06, fadeEnd: 0.1 }
+export const STATS = { start: 0.27, inEnd: 0.305, outStart: 0.665, end: 0.71 }
 export const GROWTH = {
-  start: 0.63,
-  inEnd: 0.675,
-  outStart: 0.74,
-  end: 0.79,
+  start: 0.72,
+  inEnd: 0.76,
+  outStart: 0.815,
+  end: 0.855,
 }
 export const ECO = { start: 0.9, inEnd: 0.95 }
 export const FOOTER = { start: 0.972, inEnd: 0.996 }
 
 export const NAV_LABELS = [
   [0.0, 'ORIGIN'],
-  [0.3, 'STRUCTURE'],
-  [0.63, 'FLOW'],
-  [0.76, 'VOYAGE'],
-  [0.88, 'COSMOS'],
+  [0.27, 'STRUCTURE'],
+  [0.72, 'FLOW'],
+  [0.83, 'VOYAGE'],
+  [0.9, 'COSMOS'],
 ]
