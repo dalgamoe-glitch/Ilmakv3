@@ -334,20 +334,6 @@
   color: var(--ink-faint);
 }
 
-/* ---------- feature summary (static) ---------- */
-
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  width: 100%;
-  margin-top: 12px;
-  text-align: start;
-}
-.feature-card {
-  padding: 22px 24px 26px;
-}
-
 /* ---------- product preview (static) ---------- */
 
 .preview-grid {
@@ -686,9 +672,6 @@
   .ecosystem {
     padding: 12vh 32px;
   }
-  .feature-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 /* mobile GPUs pay heavily for many live backdrop-filter regions over the
@@ -700,7 +683,6 @@
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
   }
-  .feature-card,
   .preview-card,
   .pricing-card,
   .faq-item,
@@ -775,7 +757,6 @@
   .footer-tagline {
     font-size: 12px;
   }
-  .feature-grid,
   .preview-grid,
   .pricing-grid {
     grid-template-columns: 1fr;
