@@ -8,6 +8,7 @@ import {
   useVelocity,
 } from 'framer-motion'
 import { STATS } from '../scrollMap.js'
+import { FEATURES } from '../data/features.js'
 
 // Scene 4 — feature cards orbiting the DNA helix in 3D.
 // Each card materializes near front-center, then sweeps outward and back
@@ -24,80 +25,18 @@ import { STATS } from '../scrollMap.js'
 //    + rotateZ bleed), and perspective scales offset and size together, so
 //    the bands never cross at any orbit angle;
 //  - front moment (theta = 0) lands at enter + theta0/sweep ≈ enter + 0.13.
-const CARDS = [
-  {
-    name: 'AI Tutor',
-    stat: '24/7',
-    copy: 'Answers from your own textbook, in Arabic or English, whenever you ask.',
-    enter: 0.04,
-    exit: 0.31,
-    theta0: 0.42, // orbit angle at entry (0 = front center, +x = right)
-    sweep: 3.2, // radians swept after entry (to the left/back)
-    y0: -142,
-    rz: -1,
-    phase: 0,
-  },
-  {
-    name: 'Flashcards',
-    stat: '1 tap',
-    copy: 'Every lesson becomes a ready flashcard deck before you even sit down.',
-    enter: 0.18,
-    exit: 0.45,
-    theta0: 0.42,
-    sweep: 3.2,
-    y0: 142,
-    rz: 1,
-    phase: 2.1,
-  },
-  {
-    name: 'Quiz Generator',
-    stat: '∞',
-    copy: 'Fresh practice quizzes from your exact lesson until you feel sure.',
-    enter: 0.32,
-    exit: 0.59,
-    theta0: 0.42,
-    sweep: 3.2,
-    y0: -142,
-    rz: 0.8,
-    phase: 4.2,
-  },
-  {
-    name: 'Worksheet Solver',
-    stat: 'A+',
-    copy: 'Step-by-step solutions for any worksheet or past paper you snap.',
-    enter: 0.46,
-    exit: 0.73,
-    theta0: 0.42,
-    sweep: 3.2,
-    y0: 142,
-    rz: -0.8,
-    phase: 1.3,
-  },
-  {
-    name: 'Keynotes',
-    stat: '5 min',
-    copy: 'A whole lesson distilled into sharp revision notes.',
-    enter: 0.6,
-    exit: 0.87,
-    theta0: 0.42,
-    sweep: 3.2,
-    y0: -142,
-    rz: 1,
-    phase: 3.4,
-  },
-  {
-    name: 'Your Textbook',
-    stat: '100%',
-    copy: 'Upload once and every chapter becomes its own study space.',
-    enter: 0.74,
-    exit: 2, // the section fade-out retires it
-    theta0: 0.42,
-    sweep: 3.2,
-    y0: 142,
-    rz: -1,
-    phase: 5.1,
-  },
+// Orbit choreography per card, merged with the shared FEATURES copy below.
+const CHOREOGRAPHY = [
+  { enter: 0.04, exit: 0.31, theta0: 0.42, sweep: 3.2, y0: -142, rz: -1, phase: 0 },
+  { enter: 0.18, exit: 0.45, theta0: 0.42, sweep: 3.2, y0: 142, rz: 1, phase: 2.1 },
+  { enter: 0.32, exit: 0.59, theta0: 0.42, sweep: 3.2, y0: -142, rz: 0.8, phase: 4.2 },
+  { enter: 0.46, exit: 0.73, theta0: 0.42, sweep: 3.2, y0: 142, rz: -0.8, phase: 1.3 },
+  { enter: 0.6, exit: 0.87, theta0: 0.42, sweep: 3.2, y0: -142, rz: 1, phase: 3.4 },
+  // exit: 2 — the section fade-out retires this last card instead of an orbit exit
+  { enter: 0.74, exit: 2, theta0: 0.42, sweep: 3.2, y0: 142, rz: -1, phase: 5.1 },
 ]
+
+const CARDS = FEATURES.map((feature, i) => ({ ...feature, ...CHOREOGRAPHY[i] }))
 
 const smooth = (a, b, x) => {
   const t = Math.min(Math.max((x - a) / (b - a), 0), 1)

@@ -1,30 +1,74 @@
+import { useEffect, useRef } from 'react'
 import ParticleScene from './three/ParticleScene.jsx'
 import { useScrollProgress } from './hooks/useScrollProgress.js'
+import { WaitlistProvider, useWaitlist } from './context/WaitlistContext.jsx'
+import { LangProvider, useLang } from './context/LangContext.jsx'
+import WaitlistModal from './components/WaitlistModal.jsx'
+import SkipIntro from './components/SkipIntro.jsx'
 import Navbar from './sections/Navbar.jsx'
 import Hero from './sections/Hero.jsx'
+import FeatureSummary from './sections/FeatureSummary.jsx'
 import Stats from './sections/Stats.jsx'
 import Growth from './sections/Growth.jsx'
 import Ecosystem from './sections/Ecosystem.jsx'
+import ProductPreview from './sections/ProductPreview.jsx'
+import Proof from './sections/Proof.jsx'
+import Pricing from './sections/Pricing.jsx'
+import FAQ from './sections/FAQ.jsx'
 import Footer from './sections/Footer.jsx'
 import './styles/sections.css'
 
-export default function App() {
-  const progress = useScrollProgress()
+function AppShell() {
+  const trackRef = useRef(null)
+  const progress = useScrollProgress(trackRef)
+  const { open, closeWaitlist } = useWaitlist()
+  const { t } = useLang()
+
+  useEffect(() => {
+    document.documentElement.dir = t.dir
+  }, [t.dir])
 
   return (
     <div id="top">
-      {/* 850vh scroll track drives the whole voyage */}
-      <div className="scroll-track" aria-hidden="true" />
-
       <div className="nebula" aria-hidden="true" />
       <ParticleScene progress={progress} />
 
       <Navbar progress={progress} />
-      <Hero progress={progress} />
+
+      {/* Static, always-visible: message lands in the first two screens
+          without requiring any scroll into the cinematic track below. */}
+      <Hero />
+      <FeatureSummary />
+
+      {/* Cinematic track — scroll progress is scoped to this element via
+          trackRef, so it plays out identically regardless of the static
+          content before/after it (see useScrollProgress.js). Stats/Growth/
+          Ecosystem are `position: fixed` overlays, so they don't need to be
+          visually nested inside the spacer to be driven by its scroll range. */}
+      <div className="scroll-track" ref={trackRef} aria-hidden="true" />
       <Stats progress={progress} />
       <Growth progress={progress} />
       <Ecosystem progress={progress} />
-      <Footer progress={progress} />
+      <SkipIntro progress={progress} />
+
+      {/* Static, always-visible: the substance a buyer needs. */}
+      <ProductPreview />
+      <Proof />
+      <Pricing />
+      <FAQ />
+      <Footer />
+
+      <WaitlistModal open={open} onClose={closeWaitlist} />
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <LangProvider>
+      <WaitlistProvider>
+        <AppShell />
+      </WaitlistProvider>
+    </LangProvider>
   )
 }

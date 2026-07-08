@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { NAV_LABELS } from '../scrollMap.js'
+import { useWaitlist } from '../context/WaitlistContext.jsx'
+import { useLang } from '../context/LangContext.jsx'
 
-// Floating frosted pill nav — the section label morphs as you travel.
-const LINKS = ['Product', 'Solutions', 'Pricing', 'Docs']
+// Floating frosted pill nav — the section label morphs as you travel through
+// the cinematic track. Links now point at real in-page sections instead of
+// "#top", and the primary actions open the waitlist modal.
+const NAV_HREFS = ['#features', '#proof', '#pricing', '#faq']
 
 export default function Navbar({ progress }) {
   const [label, setLabel] = useState('ORIGIN')
+  const { openWaitlist } = useWaitlist()
+  const { t, toggleLang } = useLang()
 
   useEffect(() => {
     const update = (p) => {
@@ -63,20 +69,23 @@ export default function Navbar({ progress }) {
         </div>
 
         <ul className="nav-links">
-          {LINKS.map((l) => (
+          {t.navLinks.map((l, i) => (
             <li key={l}>
-              <a href="#top">{l}</a>
+              <a href={NAV_HREFS[i]}>{l}</a>
             </li>
           ))}
         </ul>
 
         <div className="nav-actions">
-          <a className="nav-signin" href="#top">
-            Sign in
-          </a>
-          <a className="btn btn-primary nav-cta" href="#top">
-            Start studying free <span className="btn-orb">→</span>
-          </a>
+          <button type="button" className="nav-lang" onClick={toggleLang}>
+            {t.langToggleLabel}
+          </button>
+          <button type="button" className="nav-signin" onClick={openWaitlist}>
+            {t.signIn}
+          </button>
+          <button type="button" className="btn btn-primary nav-cta" onClick={openWaitlist}>
+            {t.navCta} <span className="btn-orb">→</span>
+          </button>
         </div>
       </nav>
     </header>

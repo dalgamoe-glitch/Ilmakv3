@@ -51,8 +51,11 @@ export const GROWTH = {
   outStart: 0.815,
   end: 0.855,
 }
-export const ECO = { start: 0.9, inEnd: 0.95 }
-export const FOOTER = { start: 0.972, inEnd: 0.996 }
+// outStart/end fade Ecosystem out right at the very end of the track (rather
+// than holding at opacity 1 forever) so it doesn't sit fixed on top of the
+// static sections (product preview, proof, pricing, FAQ, footer) that now
+// follow the cinematic track in normal document flow.
+export const ECO = { start: 0.9, inEnd: 0.95, outStart: 0.985, end: 1 }
 
 export const NAV_LABELS = [
   [0.0, 'ORIGIN'],

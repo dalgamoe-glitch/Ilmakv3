@@ -1,13 +1,15 @@
 import { motion, useTransform } from 'framer-motion'
 import { ECO } from '../scrollMap.js'
+import { useWaitlist } from '../context/WaitlistContext.jsx'
 
 // Scene 7 — galaxy scene: headline above, copy + CTAs below the core.
 export default function Ecosystem({ progress }) {
+  const { openWaitlist } = useWaitlist()
   // keyframes span 0..1 — see the ScrollTimeline note in Hero.jsx
   const opacity = useTransform(
     progress,
-    [0, ECO.start, ECO.inEnd, 1],
-    [0, 0, 1, 1],
+    [0, ECO.start, ECO.inEnd, ECO.outStart, ECO.end],
+    [0, 0, 1, 1, 0],
   )
   const pointerEvents = useTransform(opacity, (o) => (o > 0.25 ? 'auto' : 'none'))
   const yTop = useTransform(progress, [0, ECO.start, 1], [90, 90, 0])
@@ -34,9 +36,9 @@ export default function Ecosystem({ progress }) {
           orbiting you.
         </p>
         <div className="btn-row eco-btns">
-          <a className="btn btn-primary" href="#top">
+          <button type="button" className="btn btn-primary" onClick={openWaitlist}>
             Explore the ecosystem <span className="btn-orb">→</span>
-          </a>
+          </button>
         </div>
       </motion.div>
     </motion.section>
