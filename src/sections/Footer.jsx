@@ -3,15 +3,13 @@ import { useLang } from '../context/LangContext.jsx'
 // Real, working in-page navigation instead of a bare tagline. Contact/legal
 // links are intentionally omitted until there's a real inbox/policy to point
 // to — a footer link that goes nowhere is worse than no link at all.
-const FOOTER_LINKS = [
-  { label: 'Features', href: '#features' },
-  { label: 'Proof', href: '#proof' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'FAQ', href: '#faq' },
-]
+// Hrefs pair positionally with t.navLinks (see LangContext.jsx) so the labels
+// stay localized when toggleLang flips the language.
+const FOOTER_HREFS = ['#features', '#proof', '#pricing', '#faq']
 
 export default function Footer() {
   const { t, toggleLang } = useLang()
+  const footerLinks = t.navLinks.map((label, i) => ({ label, href: FOOTER_HREFS[i] }))
 
   return (
     <footer className="site-footer static-footer" aria-label="Footer">
@@ -21,7 +19,7 @@ export default function Footer() {
             ILMAK <span className="footer-arabic">علمك</span>
           </p>
           <nav className="footer-nav" aria-label="Footer navigation">
-            {FOOTER_LINKS.map((l) => (
+            {footerLinks.map((l) => (
               <a key={l.href} href={l.href}>
                 {l.label}
               </a>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 // ILMAK has no backend yet, so this captures interest locally in the UI and
@@ -8,14 +8,22 @@ import { AnimatePresence, motion } from 'framer-motion'
 export default function WaitlistModal({ open, onClose }) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState('idle') // idle | submitted
+  const inputRef = useRef(null)
 
   useEffect(() => {
     if (!open) return undefined
     setStatus('idle')
     setEmail('')
+    const previouslyFocused = document.activeElement
+    document.body.style.overflow = 'hidden'
+    inputRef.current?.focus()
     const onKey = (e) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+      previouslyFocused?.focus?.()
+    }
   }, [open, onClose])
 
   const handleSubmit = (e) => {
@@ -67,6 +75,7 @@ export default function WaitlistModal({ open, onClose }) {
                 </p>
                 <form className="modal-form" onSubmit={handleSubmit}>
                   <input
+                    ref={inputRef}
                     type="email"
                     required
                     placeholder="you@example.com"

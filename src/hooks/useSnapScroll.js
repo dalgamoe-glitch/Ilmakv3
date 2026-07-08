@@ -20,7 +20,14 @@ export function useSnapScroll({ trackRef, lenisRef, enabled }) {
   const idleTimer = useRef(null)
 
   useEffect(() => {
-    if (!enabled) return undefined
+    // Disabling (e.g. the waitlist modal opening mid-glide) must also halt
+    // any in-flight lenis.scrollTo animation — removing these listeners alone
+    // leaves the page drifting toward its old snap target behind the modal.
+    if (!enabled) {
+      lenisRef.current?.stop()
+      return undefined
+    }
+    lenisRef.current?.start()
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return undefined
     }

@@ -5,9 +5,18 @@ import { useLang } from '../context/LangContext.jsx'
 // Static, always-on hero — no longer gated behind scroll. The particle
 // canvas sits idle on the torus formation (scene 0) behind it, so the
 // cinematic backdrop is intact but the message is visible immediately.
-export default function Hero() {
+export default function Hero({ lenisRef }) {
   const { openWaitlist } = useWaitlist()
   const { t } = useLang()
+
+  // Lenis intercepts native anchor-scroll while active, so drive it directly
+  // instead of relying on the browser's default `href="#features"` jump.
+  const handleFeaturesClick = (e) => {
+    const lenis = lenisRef?.current
+    if (!lenis) return
+    e.preventDefault()
+    lenis.scrollTo('#features')
+  }
 
   return (
     <section className="overlay-static hero" aria-label="Intro">
@@ -28,7 +37,7 @@ export default function Hero() {
           <button type="button" className="btn btn-primary" onClick={openWaitlist}>
             {t.ctaPrimary} <span className="btn-orb">→</span>
           </button>
-          <a className="btn btn-ghost" href="#features">
+          <a className="btn btn-ghost" href="#features" onClick={handleFeaturesClick}>
             {t.ctaSecondary}
           </a>
         </div>

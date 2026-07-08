@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 const QUESTIONS = [
   {
@@ -24,7 +24,8 @@ const QUESTIONS = [
   },
 ]
 
-function FAQItem({ item, isOpen, onToggle }) {
+function FAQItem({ item, index, isOpen, onToggle }) {
+  const answerId = `faq-answer-${index}`
   return (
     <div className="glass faq-item">
       <button
@@ -32,23 +33,27 @@ function FAQItem({ item, isOpen, onToggle }) {
         className="faq-question"
         onClick={onToggle}
         aria-expanded={isOpen}
+        aria-controls={answerId}
       >
         {item.q}
         <span className="faq-icon" aria-hidden="true">
           {isOpen ? '−' : '+'}
         </span>
       </button>
-      {isOpen && (
-        <motion.p
-          className="faq-answer"
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {item.a}
-        </motion.p>
-      )}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.p
+            id={answerId}
+            className="faq-answer"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {item.a}
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -67,6 +72,7 @@ export default function FAQ() {
             <FAQItem
               key={item.q}
               item={item}
+              index={i}
               isOpen={openIndex === i}
               onToggle={() => setOpenIndex(openIndex === i ? -1 : i)}
             />

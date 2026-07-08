@@ -37,7 +37,7 @@ function AppShell() {
 
       {/* Static, always-visible: message lands in the first two screens
           without requiring any scroll into the cinematic track below. */}
-      <Hero />
+      <Hero lenisRef={lenisRef} />
       <FeatureSummary />
 
       {/* Cinematic track — scroll progress is scoped to this element via
@@ -49,7 +49,7 @@ function AppShell() {
       <Stats progress={progress} />
       <Growth progress={progress} />
       <Ecosystem progress={progress} />
-      <SkipIntro progress={progress} />
+      <SkipIntro progress={progress} lenisRef={lenisRef} />
 
       {/* Static, always-visible: the substance a buyer needs. */}
       <ProductPreview />
