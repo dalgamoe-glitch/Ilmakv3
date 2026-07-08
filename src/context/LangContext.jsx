@@ -29,6 +29,7 @@ const STRINGS = {
     footerTagline:
       'Upload your book. Understand your lessons. Study with confidence.',
     langToggleLabel: 'العربية',
+    skipIntro: 'Skip to details ↓',
   },
   ar: {
     dir: 'rtl',
@@ -47,6 +48,7 @@ const STRINGS = {
     featuresSub: 'كل أداة من أدوات علمك مبنية حول نفس الكتاب الذي تدرس منه.',
     footerTagline: 'ارفع كتابك. افهم دروسك. وادرس بثقة.',
     langToggleLabel: 'English',
+    skipIntro: 'تخطَّ إلى التفاصيل ↓',
   },
 }
 
