@@ -22,8 +22,10 @@ import { FEATURES } from '../data/features.js'
 //    i+2 — which share a vertical band — are never visible together;
 //  - consecutive cards alternate top (y0 < 0) / bottom (y0 > 0) bands whose
 //    rects can't intersect vertically (band offset 142 > cardHeight/2 + bob
-//    + rotateZ bleed), and perspective scales offset and size together, so
-//    the bands never cross at any orbit angle;
+//    + rotateZ bleed) at the front (theta ≈ 0), and perspective scales offset
+//    and size together, so the bands stay separated through the readable
+//    window; a card only drifts (see CLIMB_PX below) once it's well past
+//    front and already dimmed/blurred by depth+exit fade;
 //  - front moment (theta = 0) lands at enter + theta0/sweep ≈ enter + 0.13.
 // Orbit choreography per card, merged with the shared FEATURES copy below.
 const CHOREOGRAPHY = [
@@ -45,6 +47,13 @@ const smooth = (a, b, x) => {
 
 const cardTheta = (card, u) => card.theta0 - card.sweep * Math.max(u - card.enter, 0)
 
+// Vertical drift as a card sweeps away from front — makes it read as riding
+// along the twisting DNA helix instead of swinging on a flat horizontal
+// arc. 0 at entry (theta = theta0), full CLIMB_PX by the time the card has
+// swept all the way round and out (theta = theta0 - sweep). All cards climb
+// the same direction so the whole orbit reads as one continuous spiral.
+const CLIMB_PX = 200
+
 function CardBody({ card }) {
   return (
     <>
@@ -62,14 +71,17 @@ function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
   const transform = useTransform([u, time], ([uv, tv]) => {
     const th = cardTheta(card, uv)
     const bob = Math.sin((tv / 1000) * 0.7 + card.phase) * 4
+    const climb = (CLIMB_PX * (card.theta0 - th)) / card.sweep
     const x = radius * Math.sin(th)
-    const y = card.y0 * laneScale + bob
+    const y = card.y0 * laneScale + bob - climb
     const z = radius * (Math.cos(th) - 1)
     const ry = -th * 0.55
+    const rx = -climb * 0.035
     const rz = card.rz + Math.sin((tv / 1000) * 0.5 + card.phase) * 0.6
     return (
       `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ` +
-      `${z.toFixed(1)}px) rotateY(${ry.toFixed(3)}rad) rotateZ(${rz.toFixed(2)}deg)`
+      `${z.toFixed(1)}px) rotateY(${ry.toFixed(3)}rad) rotateX(${rx.toFixed(2)}deg) ` +
+      `rotateZ(${rz.toFixed(2)}deg)`
     )
   })
 
