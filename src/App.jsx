@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import ParticleScene from './three/ParticleScene.jsx'
 import { useScrollProgress } from './hooks/useScrollProgress.js'
 import { useSnapScroll } from './hooks/useSnapScroll.js'
+import { useCinematicScroll } from './hooks/useCinematicScroll.js'
 import { WaitlistProvider, useWaitlist } from './context/WaitlistContext.jsx'
 import { LangProvider, useLang } from './context/LangContext.jsx'
 import WaitlistModal from './components/WaitlistModal.jsx'
@@ -24,7 +25,10 @@ function AppShell() {
   const { open, closeWaitlist } = useWaitlist()
   const { t } = useLang()
 
-  useSnapScroll({ trackRef, lenisRef, enabled: !open })
+  // Cinematic "demo mode" (hands-free scroll for recording). Snap must be off
+  // while it plays or the two scrollers fight.
+  const { playing, play } = useCinematicScroll({ trackRef, lenisRef })
+  useSnapScroll({ trackRef, lenisRef, enabled: !open && !playing })
 
   useEffect(() => {
     document.documentElement.dir = t.dir
@@ -34,6 +38,15 @@ function AppShell() {
     <div id="top">
       <div className="nebula" aria-hidden="true" />
       <ParticleScene progress={progress} />
+
+      {/* Hidden corner tap zone — the phone trigger for cinematic demo mode
+          (desktop uses the volume-up / "+" key). Transparent, so it never
+          shows up in a screen recording. */}
+      <div
+        className="cine-trigger"
+        aria-hidden="true"
+        onPointerDown={play}
+      />
 
       {/* Static, always-visible: message lands in the first two screens
           without requiring any scroll into the cinematic track below. */}

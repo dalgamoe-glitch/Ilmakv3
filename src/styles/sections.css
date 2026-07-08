@@ -4,6 +4,22 @@
   height: 1100vh; /* keep in sync with TRACK_VH in src/scrollMap.js */
 }
 
+/* Invisible corner tap target that starts cinematic demo mode on phones
+   (desktop uses the volume-up / "+" key). Fully transparent so it never
+   appears in a screen recording; sits in the top-left where nothing else
+   is interactive. */
+.cine-trigger {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 72px;
+  height: 72px;
+  z-index: 9999;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
 .webgl-mount {
   position: fixed;
   inset: 0;
