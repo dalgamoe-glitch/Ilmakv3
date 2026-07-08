@@ -1,8 +1,12 @@
 import { motion, useTransform } from 'framer-motion'
 import { GROWTH } from '../scrollMap.js'
+import { useWaitlist } from '../context/WaitlistContext.jsx'
+import { useLang } from '../context/LangContext.jsx'
 
 // Scene 5 — headline left, supporting copy + CTAs right, above the terrain.
 export default function Growth({ progress }) {
+  const { openWaitlist } = useWaitlist()
+  const { t } = useLang()
   // keyframes span 0..1 — see the ScrollTimeline note in Hero.jsx
   const opacity = useTransform(
     progress,
@@ -41,9 +45,9 @@ export default function Growth({ progress }) {
           the exact lesson you need and builds your session around it.
         </p>
         <div className="btn-row">
-          <a className="btn btn-primary" href="#top">
-            Start studying free <span className="btn-orb">→</span>
-          </a>
+          <button type="button" className="btn btn-primary" onClick={openWaitlist}>
+            {t.ctaPrimary} <span className="btn-orb">→</span>
+          </button>
         </div>
       </motion.div>
     </motion.section>
