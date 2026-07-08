@@ -174,7 +174,13 @@ export function useCinematicScroll({ trackRef, lenisRef }) {
         return
       }
       const volumeUp = e.key === 'AudioVolumeUp' // real media key, best effort
-      const plus = e.key === '+' || e.key === '=' || e.code === 'NumpadAdd'
+      // Unmodified "+"/"=" only — with Ctrl/Cmd/Alt it's browser zoom, which we
+      // must not swallow.
+      const plus =
+        (e.key === '+' || e.key === '=' || e.code === 'NumpadAdd') &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey
       if ((volumeUp || plus) && !isTyping(document.activeElement)) {
         e.preventDefault()
         play()
