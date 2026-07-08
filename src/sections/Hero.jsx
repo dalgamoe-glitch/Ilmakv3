@@ -24,20 +24,15 @@ export default function Hero({ progress }) {
       aria-label="Intro"
     >
       <div className="hero-inner text-scrim">
-        <p className="eyebrow">
-          <span className="num">01</span>
-          <span className="rule" />
-          Welcome to a new way to study
-        </p>
+        <p className="eyebrow">A new way to study</p>
         <h1 className="headline hero-headline">
           Technology that redefines
           <br />
           the nature of studying
         </h1>
         <p className="sub hero-sub">
-          ILMAK (علمك) turns the exact textbook you study in Jordan into your
-          own AI teacher — upload your book, ask it anything, and walk into
-          every exam already knowing you&rsquo;ve got this.
+          Upload the exact textbook you study in Jordan and it becomes your
+          personal AI teacher for every exam.
         </p>
         <div className="btn-row hero-btns">
           <a className="btn btn-primary" href="#top">

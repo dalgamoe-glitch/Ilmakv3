@@ -20,13 +20,8 @@ export default function Ecosystem({ progress }) {
       aria-label="The ILMAK ecosystem"
     >
       <motion.div className="eco-top text-scrim" style={{ y: yTop }}>
-        <p className="eyebrow">
-          <span className="num">03</span>
-          <span className="rule" />
-          Your study universe
-        </p>
         <h2 className="headline eco-headline">
-          A universe of study tools —
+          A universe of study tools,
           <br />
           already in motion
         </h2>
@@ -34,18 +29,13 @@ export default function Ecosystem({ progress }) {
 
       <motion.div className="eco-bottom text-scrim" style={{ y: yBottom }}>
         <p className="sub eco-sub">
-          ILMAK is not another chatbot. It&rsquo;s a complete study ecosystem
-          built around your own textbook — AI Teacher, book segmentation,
-          flashcards, quizzes, keynotes, worksheet solver and focus tools,
-          all orbiting you. So the night before the exam feels calm, not
-          terrifying.
+          A complete study ecosystem built around your own textbook: AI
+          Tutor, flashcards, quizzes, keynotes and a worksheet solver, all
+          orbiting you.
         </p>
         <div className="btn-row eco-btns">
           <a className="btn btn-primary" href="#top">
             Explore the ecosystem <span className="btn-orb">→</span>
-          </a>
-          <a className="btn btn-ghost" href="#top">
-            View all tools
           </a>
         </div>
       </motion.div>

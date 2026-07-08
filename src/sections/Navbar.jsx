@@ -75,7 +75,7 @@ export default function Navbar({ progress }) {
             Sign in
           </a>
           <a className="btn btn-primary nav-cta" href="#top">
-            Get started <span className="btn-orb">→</span>
+            Start studying free <span className="btn-orb">→</span>
           </a>
         </div>
       </nav>
