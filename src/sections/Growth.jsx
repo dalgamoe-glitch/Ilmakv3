@@ -28,31 +28,21 @@ export default function Growth({ progress }) {
       aria-label="Why ILMAK"
     >
       <motion.div className="growth-left text-scrim" style={{ y: yLeft }}>
-        <p className="eyebrow left">
-          <span className="num">02</span>
-          <span className="rule" />
-          The pull of understanding
-        </p>
         <h2 className="headline growth-headline">
           Everything revolves around
           <br />
-          one thing — your understanding
+          one thing: your understanding
         </h2>
       </motion.div>
 
       <motion.div className="growth-right text-scrim" style={{ y: yRight }}>
         <p className="sub growth-sub">
-          Hundreds of pages of Tawjihi and school books. One centre of
-          gravity. ILMAK pulls the exact lesson you need out of the noise and
-          builds your whole study session around it — so studying stops
-          feeling like drowning.
+          Hundreds of Tawjihi pages, one centre of gravity. ILMAK pulls out
+          the exact lesson you need and builds your session around it.
         </p>
         <div className="btn-row">
           <a className="btn btn-primary" href="#top">
             Start studying free <span className="btn-orb">→</span>
-          </a>
-          <a className="btn btn-ghost" href="#top">
-            See ILMAK in action
           </a>
         </div>
       </motion.div>

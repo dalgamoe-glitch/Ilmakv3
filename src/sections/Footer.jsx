@@ -25,7 +25,7 @@ export default function Footer({ progress }) {
           Upload your book. Understand your lessons. Study with confidence.
         </p>
         <p className="footer-fine">
-          © {new Date().getFullYear()} ILMAK — an AI study ecosystem for
+          © {new Date().getFullYear()} ILMAK, an AI study ecosystem for
           students across Jordan and the Arab region.
         </p>
       </div>

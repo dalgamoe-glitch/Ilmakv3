@@ -9,11 +9,11 @@ import {
 } from 'framer-motion'
 import { STATS } from '../scrollMap.js'
 
-// Scene 4 — frosted stat cards orbiting the DNA helix in 3D.
+// Scene 4 — feature cards orbiting the DNA helix in 3D.
 // Each card materializes near front-center, then sweeps outward and back
-// (dimming, shrinking, tilting) while the next one enters — matching the
-// reference clip. Card text carries a scroll-velocity echo (ghost copies
-// that trail while scrubbing and collapse at rest).
+// (dimming, shrinking, tilting) while the next one enters. Card text
+// carries a scroll-velocity echo (a ghost copy that trails while
+// scrubbing and collapses at rest).
 
 // Six feature cards, one per ILMAK selling point. Choreography contract
 // (keeps every pair of visible cards from ever overlapping):
@@ -26,81 +26,75 @@ import { STATS } from '../scrollMap.js'
 //  - front moment (theta = 0) lands at enter + theta0/sweep ≈ enter + 0.13.
 const CARDS = [
   {
-    eyebrow: 'AI TUTOR',
-    figure: '24/7',
-    title: 'Your private AI tutor',
-    copy: 'Ask anything about your exact lesson — answers from your own textbook, in Arabic or English.',
+    name: 'AI Tutor',
+    stat: '24/7',
+    copy: 'Answers from your own textbook, in Arabic or English, whenever you ask.',
     enter: 0.04,
     exit: 0.31,
     theta0: 0.42, // orbit angle at entry (0 = front center, +x = right)
     sweep: 3.2, // radians swept after entry (to the left/back)
     y0: -142,
-    rz: -1.5,
+    rz: -1,
     phase: 0,
   },
   {
-    eyebrow: 'FLASHCARDS',
-    figure: '1 tap',
-    title: 'Revision that makes itself',
-    copy: 'Every lesson becomes flashcards automatically — hours of prep done before you sit down.',
+    name: 'Flashcards',
+    stat: '1 tap',
+    copy: 'Every lesson becomes a ready flashcard deck before you even sit down.',
     enter: 0.18,
     exit: 0.45,
     theta0: 0.42,
     sweep: 3.2,
     y0: 142,
-    rz: 1.5,
+    rz: 1,
     phase: 2.1,
   },
   {
-    eyebrow: 'QUIZ GENERATION',
-    figure: '∞',
-    title: 'Unlimited practice quizzes',
-    copy: 'Generate fresh quizzes from your exact lesson until you walk into the exam already sure.',
+    name: 'Quiz Generator',
+    stat: '∞',
+    copy: 'Fresh practice quizzes from your exact lesson until you feel sure.',
     enter: 0.32,
     exit: 0.59,
     theta0: 0.42,
     sweep: 3.2,
     y0: -142,
-    rz: 1.2,
+    rz: 0.8,
     phase: 4.2,
   },
   {
-    eyebrow: 'WORKSHEET SOLVER',
-    figure: 'A+',
-    title: 'Every step, explained',
-    copy: 'Snap any worksheet or past paper and get step-by-step solutions you actually understand.',
+    name: 'Worksheet Solver',
+    stat: 'A+',
+    copy: 'Step-by-step solutions for any worksheet or past paper you snap.',
     enter: 0.46,
     exit: 0.73,
     theta0: 0.42,
     sweep: 3.2,
     y0: 142,
-    rz: -1.2,
+    rz: -0.8,
     phase: 1.3,
   },
   {
-    eyebrow: 'KEYNOTES',
-    figure: '5 min',
-    title: 'A whole lesson in five minutes',
-    copy: 'Key ideas distilled into sharp revision notes — perfect for the night before the exam.',
+    name: 'Keynotes',
+    stat: '5 min',
+    copy: 'A whole lesson distilled into sharp revision notes.',
     enter: 0.6,
     exit: 0.87,
     theta0: 0.42,
     sweep: 3.2,
     y0: -142,
-    rz: 1.5,
+    rz: 1,
     phase: 3.4,
   },
   {
-    eyebrow: 'YOUR TEXTBOOK',
-    figure: '100%',
-    title: 'Built on your exact book',
-    copy: 'Upload your textbook once — every chapter becomes its own smart study space.',
+    name: 'Your Textbook',
+    stat: '100%',
+    copy: 'Upload once and every chapter becomes its own study space.',
     enter: 0.74,
     exit: 2, // the section fade-out retires it
     theta0: 0.42,
     sweep: 3.2,
     y0: 142,
-    rz: -1.5,
+    rz: -1,
     phase: 5.1,
   },
 ]
@@ -115,12 +109,11 @@ const cardTheta = (card, u) => card.theta0 - card.sweep * Math.max(u - card.ente
 function CardBody({ card }) {
   return (
     <>
-      <p className="stat-eyebrow">
-        <span className="nav-dot" /> {card.eyebrow}
-      </p>
-      <p className="stat-figure">{card.figure}</p>
+      <div className="stat-head">
+        <h3 className="stat-name">{card.name}</h3>
+        <span className="stat-stat">{card.stat}</span>
+      </div>
       <div className="stat-divider" />
-      <h3 className="stat-title">{card.title}</h3>
       <p className="stat-copy">{card.copy}</p>
     </>
   )
@@ -129,12 +122,12 @@ function CardBody({ card }) {
 function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
   const transform = useTransform([u, time], ([uv, tv]) => {
     const th = cardTheta(card, uv)
-    const bob = Math.sin((tv / 1000) * 0.7 + card.phase) * 5
+    const bob = Math.sin((tv / 1000) * 0.7 + card.phase) * 4
     const x = radius * Math.sin(th)
     const y = card.y0 * laneScale + bob
     const z = radius * (Math.cos(th) - 1)
     const ry = -th * 0.55
-    const rz = card.rz + Math.sin((tv / 1000) * 0.5 + card.phase) * 1
+    const rz = card.rz + Math.sin((tv / 1000) * 0.5 + card.phase) * 0.6
     return (
       `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ` +
       `${z.toFixed(1)}px) rotateY(${ry.toFixed(3)}rad) rotateZ(${rz.toFixed(2)}deg)`
@@ -169,9 +162,7 @@ function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
     Math.round(60 + Math.cos(cardTheta(card, uv)) * 40),
   )
 
-  const echoO = useTransform(echoPx, (v) => Math.min(Math.abs(v) / 16, 1) * 0.5)
-  const echoPx2 = useTransform(echoPx, (v) => v * 1.9)
-  const echoO2 = useTransform(echoO, (o) => o * 0.5)
+  const echoO = useTransform(echoPx, (v) => Math.min(Math.abs(v) / 16, 1) * 0.4)
 
   return (
     <motion.div className="orbit-card" style={{ transform, opacity, zIndex }}>
@@ -181,13 +172,6 @@ function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
           <motion.div
             className="card-echo"
             style={{ x: echoPx, opacity: echoO }}
-            aria-hidden="true"
-          >
-            <CardBody card={card} />
-          </motion.div>
-          <motion.div
-            className="card-echo card-echo-far"
-            style={{ x: echoPx2, opacity: echoO2 }}
             aria-hidden="true"
           >
             <CardBody card={card} />
@@ -279,7 +263,7 @@ export default function Stats({ progress }) {
     >
       {CARDS.map((card) => (
         <OrbitCard
-          key={card.figure}
+          key={card.name}
           card={card}
           u={u}
           time={time}

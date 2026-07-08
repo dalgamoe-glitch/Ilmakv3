@@ -237,37 +237,33 @@
 .stat-tilt-right {
   transform: rotateY(-18deg) rotateX(2deg) rotateZ(2deg);
 }
-.stat-eyebrow {
+/* card header: feature name left, compact stat right */
+.stat-head {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.42em;
-  color: var(--ink-faint);
-  margin-bottom: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
 }
-.stat-figure {
-  font-size: clamp(40px, 4.2vw, 52px);
-  font-weight: 300;
-  letter-spacing: -0.03em;
-  background: linear-gradient(120deg, #f8f7fb 30%, var(--lavender) 75%, var(--pink-soft));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.stat-name {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.stat-stat {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 .stat-divider {
   height: 1px;
   margin: 12px 0;
   background: linear-gradient(90deg, var(--glass-border), transparent);
 }
-.stat-title {
-  font-size: 14.5px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
 .stat-copy {
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.6;
   color: var(--ink-dim);
 }
@@ -445,11 +441,6 @@
   .eyebrow {
     font-size: 9px;
     letter-spacing: 0.24em;
-    gap: 10px;
-  }
-  .eyebrow .rule,
-  .eyebrow .num {
-    display: none;
   }
   .nav {
     height: 52px;
