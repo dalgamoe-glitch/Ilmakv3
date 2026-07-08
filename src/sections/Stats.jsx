@@ -7,7 +7,13 @@ import {
   useTransform,
   useVelocity,
 } from 'framer-motion'
-import { STATS } from '../scrollMap.js'
+import {
+  STATS,
+  CARD_THETA0,
+  CARD_SWEEP,
+  CARD_ENTERS,
+  CARD_EXIT_SPAN,
+} from '../scrollMap.js'
 import { FEATURES } from '../data/features.js'
 
 // Scene 4 — feature cards orbiting the DNA helix in 3D.
@@ -18,25 +24,38 @@ import { FEATURES } from '../data/features.js'
 
 // Six feature cards, one per ILMAK selling point. Choreography contract
 // (keeps every pair of visible cards from ever overlapping):
-//  - enters are 0.14u apart; each card exits at enter+0.27, so cards i and
-//    i+2 — which share a vertical band — are never visible together;
+//  - enters (CARD_ENTERS, scrollMap.js) are 0.14u apart; each card exits at
+//    enter+CARD_EXIT_SPAN, so cards i and i+2 — which share a vertical band —
+//    are never visible together;
 //  - consecutive cards alternate top (y0 < 0) / bottom (y0 > 0) bands whose
 //    rects can't intersect vertically (band offset 142 > cardHeight/2 + bob
 //    + rotateZ bleed) at the front (theta ≈ 0), and perspective scales offset
 //    and size together, so the bands stay separated through the readable
 //    window; a card only drifts (see CLIMB_PX below) once it's well past
 //    front and already dimmed/blurred by depth+exit fade;
-//  - front moment (theta = 0) lands at enter + theta0/sweep ≈ enter + 0.13.
-// Orbit choreography per card, merged with the shared FEATURES copy below.
-const CHOREOGRAPHY = [
-  { enter: 0.04, exit: 0.31, theta0: 0.42, sweep: 3.2, y0: -142, rz: -1, phase: 0 },
-  { enter: 0.18, exit: 0.45, theta0: 0.42, sweep: 3.2, y0: 142, rz: 1, phase: 2.1 },
-  { enter: 0.32, exit: 0.59, theta0: 0.42, sweep: 3.2, y0: -142, rz: 0.8, phase: 4.2 },
-  { enter: 0.46, exit: 0.73, theta0: 0.42, sweep: 3.2, y0: 142, rz: -0.8, phase: 1.3 },
-  { enter: 0.6, exit: 0.87, theta0: 0.42, sweep: 3.2, y0: -142, rz: 1, phase: 3.4 },
-  // exit: 2 — the section fade-out retires this last card instead of an orbit exit
-  { enter: 0.74, exit: 2, theta0: 0.42, sweep: 3.2, y0: 142, rz: -1, phase: 5.1 },
+//  - front moment (theta = 0) lands at enter + theta0/sweep ≈ enter + 0.13
+//    (see cardFrontU in scrollMap.js — useSnapScroll snaps to exactly this).
+// Visual-only fields (y0/rz/phase) merged with entries derived from the
+// shared timing constants, so retuning the orbit can't desync the snap
+// points that scrollMap.js derives from the same numbers.
+const VISUALS = [
+  { y0: -142, rz: -1, phase: 0 },
+  { y0: 142, rz: 1, phase: 2.1 },
+  { y0: -142, rz: 0.8, phase: 4.2 },
+  { y0: 142, rz: -0.8, phase: 1.3 },
+  { y0: -142, rz: 1, phase: 3.4 },
+  { y0: 142, rz: -1, phase: 5.1 },
 ]
+
+const CHOREOGRAPHY = CARD_ENTERS.map((enter, i) => ({
+  enter,
+  // the last card's exit is retired by the section fade-out instead of an
+  // orbit exit
+  exit: i === CARD_ENTERS.length - 1 ? 2 : enter + CARD_EXIT_SPAN,
+  theta0: CARD_THETA0,
+  sweep: CARD_SWEEP,
+  ...VISUALS[i],
+}))
 
 const CARDS = FEATURES.map((feature, i) => ({ ...feature, ...CHOREOGRAPHY[i] }))
 
@@ -104,9 +123,12 @@ function OrbitCard({ card, u, time, echoPx, radius, laneScale }) {
     const th = cardTheta(card, uv)
     const d = (1 - Math.cos(th)) / 2
     const entry = 1 - smooth(card.enter, card.enter + 0.07, uv)
-    const blur = d * 2.0 + entry * 8
+    const rawBlur = d * 2.0 + entry * 8
+    // quantized to 0.25px steps — the filter string (and the GPU work behind
+    // it) only changes at discrete steps instead of every single frame
+    const blur = Math.round(rawBlur * 4) / 4
     const bright = 1 - 0.25 * d
-    return `blur(${blur.toFixed(2)}px) brightness(${bright.toFixed(3)})`
+    return `blur(${blur}px) brightness(${bright.toFixed(3)})`
   })
 
   const zIndex = useTransform(u, (uv) =>

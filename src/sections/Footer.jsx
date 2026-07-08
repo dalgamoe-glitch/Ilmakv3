@@ -11,7 +11,7 @@ const FOOTER_LINKS = [
 ]
 
 export default function Footer() {
-  const { t } = useLang()
+  const { t, toggleLang } = useLang()
 
   return (
     <footer className="site-footer static-footer" aria-label="Footer">
@@ -27,6 +27,9 @@ export default function Footer() {
               </a>
             ))}
           </nav>
+          <button type="button" className="footer-lang" onClick={toggleLang}>
+            {t.langToggleLabel}
+          </button>
         </div>
         <p className="footer-tagline">{t.footerTagline}</p>
         <p className="footer-fine">

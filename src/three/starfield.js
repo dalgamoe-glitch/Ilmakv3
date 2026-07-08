@@ -2,8 +2,8 @@ import * as THREE from 'three'
 import { starVertex, starFragment } from './shaders.js'
 
 // Distant twinkling starfield behind the morphing particle field.
-export function createStarfield(pixelRatio) {
-  const N = 1600
+export function createStarfield(pixelRatio, count = 1600) {
+  const N = count
   const pos = new Float32Array(N * 3)
   const size = new Float32Array(N)
   const phase = new Float32Array(N)

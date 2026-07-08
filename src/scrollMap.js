@@ -57,10 +57,44 @@ export const GROWTH = {
 // follow the cinematic track in normal document flow.
 export const ECO = { start: 0.9, inEnd: 0.95, outStart: 0.985, end: 1 }
 
-export const NAV_LABELS = [
-  [0.0, 'ORIGIN'],
-  [0.27, 'STRUCTURE'],
-  [0.72, 'FLOW'],
-  [0.83, 'VOYAGE'],
-  [0.9, 'COSMOS'],
-]
+// Card orbit timing (Stats.jsx) — the single source of truth for each
+// card's entry moment and shared angular parameters, so both the orbit
+// choreography and the snap-scroll stops below derive from the same
+// numbers instead of duplicating them.
+export const CARD_THETA0 = 0.42
+export const CARD_SWEEP = 3.2
+export const CARD_ENTERS = [0.04, 0.18, 0.32, 0.46, 0.6, 0.74]
+export const CARD_EXIT_SPAN = 0.27 // each card exits at enter + this
+
+// u (STATS-local, 0..1) at which a card given this entry time is dead-center
+// front — theta = 0.
+export function cardFrontU(enter) {
+  return enter + CARD_THETA0 / CARD_SWEEP
+}
+
+// Midpoints of flat (held) SCENE_KEYS segments for the given scene numbers —
+// used below for scenes that have no overlay copy of their own (so there's
+// no *_inEnd to snap to; the shape itself is the beat).
+function sceneHoldMidpoints(scenes) {
+  const mids = []
+  for (let i = 1; i < SCENE_KEYS.length; i++) {
+    const [p0, s0] = SCENE_KEYS[i - 1]
+    const [p1, s1] = SCENE_KEYS[i]
+    if (s0 === s1 && scenes.includes(s0)) mids.push((p0 + p1) / 2)
+  }
+  return mids
+}
+
+// Every readable beat inside the cinematic track, as global (0..1) progress
+// fractions — consumed by useSnapScroll so a glide never settles somewhere
+// half-faded. Combines: scene holds with no overlay of their own (strands,
+// funnel, mesh, black hole), each feature card's front-facing moment, and
+// the fully-visible point of the Growth/Ecosystem overlays.
+export const TRACK_SNAPS = [
+  ...sceneHoldMidpoints([1, 2, 3, 6]),
+  ...CARD_ENTERS.map(
+    (enter) => STATS.start + cardFrontU(enter) * (STATS.end - STATS.start),
+  ),
+  GROWTH.inEnd,
+  ECO.inEnd,
+].sort((a, b) => a - b)

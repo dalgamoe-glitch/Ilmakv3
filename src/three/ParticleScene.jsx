@@ -29,12 +29,18 @@ export default function ParticleScene({ progress }) {
       '(prefers-reduced-motion: reduce)',
     ).matches
 
+    const isSmall =
+      window.innerWidth < 768 || (navigator.hardwareConcurrency || 8) <= 4
+
     const renderer = new THREE.WebGLRenderer({
       antialias: false,
       alpha: true,
       powerPreference: 'high-performance',
     })
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
+    // mobile GPUs pay for every fragment of the additive-blended glow field —
+    // capping DPR lower there buys back a lot of frame time for a resolution
+    // loss the soft particles mostly hide
+    let pixelRatio = Math.min(window.devicePixelRatio || 1, isSmall ? 1.5 : 2)
     renderer.setPixelRatio(pixelRatio)
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setClearColor(0x000000, 0)
@@ -49,9 +55,7 @@ export default function ParticleScene({ progress }) {
     )
     camera.position.set(0, 0, 18)
 
-    const isSmall =
-      window.innerWidth < 768 || (navigator.hardwareConcurrency || 8) <= 4
-    const N = isSmall ? 26000 : 55000
+    const N = isSmall ? 15000 : 55000
 
     // bake all eight formations as vertex attributes
     const torus = genTorus(N)
@@ -100,7 +104,7 @@ export default function ParticleScene({ progress }) {
       uniforms: {
         uTime: { value: 0 },
         uScene: { value: 0 },
-        uSize: { value: isSmall ? 3.4 : 3.0 },
+        uSize: { value: isSmall ? 3.9 : 3.0 },
         uDrift: { value: reducedMotion ? 0.04 : 0.22 },
         uPixelRatio: { value: pixelRatio },
         uAlpha: { value: 1 },
@@ -117,7 +121,7 @@ export default function ParticleScene({ progress }) {
     points.frustumCulled = false
     scene.add(points)
 
-    const stars = createStarfield(pixelRatio)
+    const stars = createStarfield(pixelRatio, isSmall ? 900 : 1600)
     scene.add(stars)
 
     // black-hole occluder disc, drawn over the additive particles
@@ -151,6 +155,8 @@ export default function ParticleScene({ progress }) {
 
     const clock = new THREE.Clock()
     let raf = 0
+    let frameCount = 0
+    let badFrames = 0
     // inertial scene value: the swarm chases the scroll target with a short
     // time constant, so scrubbing feels like moving mass, not a slider
     let sceneSmooth = null
@@ -160,6 +166,23 @@ export default function ParticleScene({ progress }) {
       const t = clock.getElapsedTime()
       const dt = Math.min(Math.max(t - lastT, 1e-4), 0.05)
       lastT = t
+
+      // one-way adaptive degrade: if a device can't hold ~45fps (22ms/frame)
+      // for a sustained stretch, step the render resolution down permanently
+      // instead of letting it stay janky for the whole session
+      if (dt > 0.022) {
+        badFrames++
+        if (badFrames >= 90 && pixelRatio > 1) {
+          pixelRatio = Math.max(1, pixelRatio - 0.25)
+          renderer.setPixelRatio(pixelRatio)
+          mat.uniforms.uPixelRatio.value = pixelRatio
+          stars.material.uniforms.uPixelRatio.value = pixelRatio
+          badFrames = 0
+        }
+      } else {
+        badFrames = 0
+      }
+
       const p = typeof progress?.get === 'function' ? progress.get() : 0
       const target = progressToScene(p)
       if (sceneSmooth === null) sceneSmooth = target
@@ -196,7 +219,14 @@ export default function ParticleScene({ progress }) {
         camera.lookAt(0, 0, 0)
       }
 
-      renderer.render(scene, camera)
+      // once scrolled past the cinematic track, particles sit in the dimmed
+      // background of static content — halve the render rate there instead
+      // of paying full 60fps for a scene nobody's focused on
+      frameCount++
+      const pastTrack = p >= 0.999
+      if (!document.hidden && !(pastTrack && frameCount % 2 === 0)) {
+        renderer.render(scene, camera)
+      }
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)

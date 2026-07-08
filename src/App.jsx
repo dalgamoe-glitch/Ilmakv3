@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
 import ParticleScene from './three/ParticleScene.jsx'
 import { useScrollProgress } from './hooks/useScrollProgress.js'
+import { useSnapScroll } from './hooks/useSnapScroll.js'
 import { WaitlistProvider, useWaitlist } from './context/WaitlistContext.jsx'
 import { LangProvider, useLang } from './context/LangContext.jsx'
 import WaitlistModal from './components/WaitlistModal.jsx'
 import SkipIntro from './components/SkipIntro.jsx'
-import Navbar from './sections/Navbar.jsx'
 import Hero from './sections/Hero.jsx'
 import FeatureSummary from './sections/FeatureSummary.jsx'
 import Stats from './sections/Stats.jsx'
@@ -20,9 +20,11 @@ import './styles/sections.css'
 
 function AppShell() {
   const trackRef = useRef(null)
-  const progress = useScrollProgress(trackRef)
+  const { progress, lenisRef } = useScrollProgress(trackRef)
   const { open, closeWaitlist } = useWaitlist()
   const { t } = useLang()
+
+  useSnapScroll({ trackRef, lenisRef, enabled: !open })
 
   useEffect(() => {
     document.documentElement.dir = t.dir
@@ -32,8 +34,6 @@ function AppShell() {
     <div id="top">
       <div className="nebula" aria-hidden="true" />
       <ParticleScene progress={progress} />
-
-      <Navbar progress={progress} />
 
       {/* Static, always-visible: message lands in the first two screens
           without requiring any scroll into the cinematic track below. */}
